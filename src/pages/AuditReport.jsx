@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Layers, LayoutGrid, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReportZoneView from '../components/ReportZoneView';
 import ReportEquipmentView from '../components/ReportEquipmentView';
