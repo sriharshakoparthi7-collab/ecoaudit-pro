@@ -5,7 +5,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-// Add page imports here
+import AppLayout from './components/AppLayout';
+import Dashboard from './pages/Dashboard';
+import SiteAudit from './pages/SiteAudit';
+import ZoneWorkspace from './pages/ZoneWorkspace';
+import AuditReport from './pages/AuditReport';
+
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -33,7 +38,12 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/audit/:auditId" element={<SiteAudit />} />
+        <Route path="/audit/:auditId/zone/:zoneId" element={<ZoneWorkspace />} />
+        <Route path="/audit/:auditId/report" element={<AuditReport />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

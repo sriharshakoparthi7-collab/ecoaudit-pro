@@ -1,0 +1,227 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Plus, Save, Loader2, CheckCircle, FileText, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import ZoneCard from '../components/ZoneCard';
+
+export default function SiteAudit() {
+  const { auditId } = useParams();
+  const navigate = useNavigate();
+  const isNew = auditId === 'new';
+
+  const [audit, setAudit] = useState({
+    site_name: '', site_address: '', inspector_name: '',
+    audit_date: new Date().toISOString().split('T')[0], status: 'Draft',
+  });
+  const [zones, setZones] = useState([]);
+  const [loading, setLoading] = useState(!isNew);
+  const [saving, setSaving] = useState(false);
+  const [zoneDialog, setZoneDialog] = useState(false);
+  const [newZone, setNewZone] = useState({ zone_name: '', zone_description: '' });
+
+  useEffect(() => {
+    if (!isNew) loadData();
+  }, [auditId]);
+
+  const loadData = async () => {
+    const [auditData, zonesData] = await Promise.all([
+      base44.entities.Audit.filter({ id: auditId }),
+      base44.entities.Zone.filter({ audit_id: auditId }),
+    ]);
+    if (auditData.length) setAudit(auditData[0]);
+    setZones(zonesData);
+    setLoading(false);
+  };
+
+  const handleSave = async () => {
+    if (!audit.site_name || !audit.site_address || !audit.inspector_name) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+    setSaving(true);
+    if (isNew) {
+      const created = await base44.entities.Audit.create(audit);
+      toast.success('Audit created');
+      navigate(`/audit/${created.id}`, { replace: true });
+    } else {
+      const { id, created_date, updated_date, created_by, ...updateData } = audit;
+      await base44.entities.Audit.update(auditId, updateData);
+      toast.success('Audit saved');
+    }
+    setSaving(false);
+  };
+
+  const handleComplete = async () => {
+    await base44.entities.Audit.update(auditId, { status: 'Completed' });
+    setAudit({ ...audit, status: 'Completed' });
+    toast.success('Audit marked as completed');
+  };
+
+  const handleAddZone = async () => {
+    if (!newZone.zone_name) return;
+    const created = await base44.entities.Zone.create({
+      ...newZone,
+      audit_id: auditId,
+    });
+    setZones([...zones, created]);
+    setNewZone({ zone_name: '', zone_description: '' });
+    setZoneDialog(false);
+    toast.success('Zone added');
+  };
+
+  const handleDeleteZone = async (zoneId) => {
+    await base44.entities.Zone.delete(zoneId);
+    setZones(zones.filter(z => z.id !== zoneId));
+    toast.success('Zone removed');
+  };
+
+  const handleDeleteAudit = async () => {
+    if (!confirm('Delete this audit and all its data?')) return;
+    // Delete all zones
+    for (const z of zones) {
+      await base44.entities.Zone.delete(z.id);
+    }
+    await base44.entities.Audit.delete(auditId);
+    toast.success('Audit deleted');
+    navigate('/', { replace: true });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const set = (key, val) => setAudit({ ...audit, [key]: val });
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <button onClick={() => navigate('/')} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+        <div className="flex items-center gap-2">
+          {!isNew && audit.status === 'Completed' && (
+            <Link to={`/audit/${auditId}/report`}>
+              <Button variant="outline" size="sm">
+                <FileText className="w-3.5 h-3.5 mr-1.5" />
+                Report
+              </Button>
+            </Link>
+          )}
+          {!isNew && (
+            <Badge variant={audit.status === 'Completed' ? 'default' : 'secondary'}>
+              {audit.status}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Site Details Form */}
+      <div className="bg-card rounded-xl border border-border p-5 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Site Details</h2>
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">Site Name *</label>
+            <Input value={audit.site_name} onChange={e => set('site_name', e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">Site Address *</label>
+            <Input value={audit.site_address} onChange={e => set('site_address', e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Inspector *</label>
+              <Input value={audit.inspector_name} onChange={e => set('inspector_name', e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Date</label>
+              <Input type="date" value={audit.audit_date} onChange={e => set('audit_date', e.target.value)} />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2 pt-2">
+          <Button onClick={handleSave} disabled={saving} className="flex-1">
+            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+            {isNew ? 'Create Audit' : 'Save Changes'}
+          </Button>
+          {!isNew && audit.status === 'Draft' && (
+            <Button variant="outline" onClick={handleComplete}>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Complete
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Zones Section */}
+      {!isNew && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Zones ({zones.length})</h2>
+            <Button size="sm" onClick={() => setZoneDialog(true)}>
+              <Plus className="w-4 h-4 mr-1" />
+              Add Zone
+            </Button>
+          </div>
+          {zones.length === 0 ? (
+            <div className="text-center py-10 bg-card rounded-xl border border-dashed border-border">
+              <p className="text-sm text-muted-foreground mb-3">No zones added yet</p>
+              <Button variant="outline" size="sm" onClick={() => setZoneDialog(true)}>
+                <Plus className="w-4 h-4 mr-1" />
+                Add First Zone
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {zones.map(zone => (
+                <ZoneCard key={zone.id} zone={zone} auditId={auditId} onDelete={handleDeleteZone} />
+              ))}
+            </div>
+          )}
+
+          {/* Delete Audit */}
+          <div className="pt-4 border-t border-border">
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleDeleteAudit}>
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              Delete Audit
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Zone Dialog */}
+      <Dialog open={zoneDialog} onOpenChange={setZoneDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Zone</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Zone Name *</label>
+              <Input value={newZone.zone_name} onChange={e => setNewZone({ ...newZone, zone_name: e.target.value })} placeholder="e.g. Warehouse, Office, Rooftop" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Description</label>
+              <Textarea value={newZone.zone_description} onChange={e => setNewZone({ ...newZone, zone_description: e.target.value })} placeholder="Optional description" rows={2} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setZoneDialog(false)}>Cancel</Button>
+            <Button onClick={handleAddZone} disabled={!newZone.zone_name}>Add Zone</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
