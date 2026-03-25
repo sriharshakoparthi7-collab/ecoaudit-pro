@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Layers, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Layers, LayoutGrid, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReportZoneView from '../components/ReportZoneView';
 import ReportEquipmentView from '../components/ReportEquipmentView';
@@ -59,23 +59,33 @@ export default function AuditReport() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <button
-          onClick={() => navigate(`/audit/${auditId}`)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Audit
-        </button>
-        <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-5 border border-primary/10">
-          <h1 className="text-xl font-bold text-foreground">{audit?.site_name}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{audit?.site_address}</p>
-          <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-            <span>{audit?.inspector_name}</span>
-            <span>{moment(audit?.audit_date).format('MMM D, YYYY')}</span>
-            <span>{zones.length} zones</span>
-            <span>{totalEquipment} items</span>
+      <button
+        onClick={() => navigate(`/audit/${auditId}`)}
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Audit
+      </button>
+      <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-5 border border-primary/10">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">{audit?.site_name}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{audit?.site_address}</p>
+            <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+              <span>{audit?.inspector_name}</span>
+              <span>{moment(audit?.audit_date).format('MMM D, YYYY')}</span>
+              <span>{zones.length} zones</span>
+              <span>{totalEquipment} items</span>
+            </div>
           </div>
+          <a href={`/audit/${auditId}/client-report`} className="flex-shrink-0">
+            <Button size="sm" className="text-xs">
+              <FileText className="w-3.5 h-3.5 mr-1.5" />
+              Client Report
+            </Button>
+          </a>
         </div>
+      </div>
       </div>
 
       {/* Tabs */}

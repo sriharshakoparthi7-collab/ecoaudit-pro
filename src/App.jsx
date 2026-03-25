@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import SiteAudit from './pages/SiteAudit';
 import ZoneWorkspace from './pages/ZoneWorkspace';
 import AuditReport from './pages/AuditReport';
+import ClientReport from './pages/ClientReport';
 
 
 const AuthenticatedApp = () => {
@@ -43,6 +44,7 @@ const AuthenticatedApp = () => {
         <Route path="/audit/:auditId" element={<SiteAudit />} />
         <Route path="/audit/:auditId/zone/:zoneId" element={<ZoneWorkspace />} />
         <Route path="/audit/:auditId/report" element={<AuditReport />} />
+        <Route path="/audit/:auditId/client-report" element={<ClientReport />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
