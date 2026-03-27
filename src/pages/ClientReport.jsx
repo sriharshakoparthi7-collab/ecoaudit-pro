@@ -1,110 +1,55 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Printer, Layers, LayoutGrid, Leaf } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Printer } from 'lucide-react';
 import moment from 'moment';
-import ClientReportKPIs from '../components/ClientReportKPIs';
-import ClientReportChart from '../components/ClientReportChart';
-import ClientReportTables from '../components/ClientReportTables';
-
-const ENTITY_MAP = {
-  'HVAC Unit': 'HVACUnit',
-  'Lighting System': 'LightingSystem',
-  'Main Switchboard': 'MainSwitchboard',
-  'Additional Switchboard': 'AdditionalSwitchboard',
-  'Solar PV': 'SolarPV',
-  'Forklift Charger': 'ForkliftCharger',
-  'Hot Water System': 'HotWaterSystem',
-};
-
-function getItemName(item, category) {
-  switch (category) {
-    case 'HVAC Unit': return item.unit_name || 'HVAC Unit';
-    case 'Lighting System': return item.light_type || 'Lighting System';
-    case 'Main Switchboard':
-    case 'Additional Switchboard': return item.name || category;
-    case 'Solar PV': return `Solar PV${item.inverter_brand_model ? ` — ${item.inverter_brand_model}` : ''}`;
-    case 'Forklift Charger': return item.charger_type || 'Forklift Charger';
-    case 'Hot Water System': return item.dhw_details_type || 'Hot Water System';
-    default: return category;
-  }
-}
-
-function getValue(item, category) {
-  switch (category) {
-    case 'HVAC Unit': return (item.cooling_capacity_kw || 0) + (item.heating_capacity_kw || 0);
-    case 'Lighting System': return (item.rated_wattage || 0) * (item.quantity || 1) / 1000;
-    case 'Solar PV': return item.system_size_kw || 0;
-    case 'Forklift Charger': return item.quantity || 1;
-    case 'Hot Water System': return item.size_liters || 0;
-    default: return 1;
-  }
-}
-
-function getValueUnit(category) {
-  switch (category) {
-    case 'HVAC Unit': return 'kW';
-    case 'Lighting System': return 'kW';
-    case 'Solar PV': return 'kW';
-    case 'Forklift Charger': return 'units';
-    case 'Hot Water System': return 'L';
-    default: return 'count';
-  }
-}
-
-function getNotes(item, category) {
-  return item.comments || item.cable_route_description || item.location || item.area_location || '';
-}
+import ReportHeader from '../components/report/ReportHeader';
+import ReportElectrical from '../components/report/ReportElectrical';
+import ReportHVAC from '../components/report/ReportHVAC';
+import ReportLighting from '../components/report/ReportLighting';
+import ReportSolar from '../components/report/ReportSolar';
+import ReportForklift from '../components/report/ReportForklift';
+import ReportHotWater from '../components/report/ReportHotWater';
+import ReportObservations from '../components/report/ReportObservations';
 
 export default function ClientReport() {
   const { auditId } = useParams();
   const navigate = useNavigate();
-  const [audit, setAudit] = useState(null);
-  const [items, setItems] = useState([]);
-  const [zones, setZones] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [groupBy, setGroupBy] = useState('category');
-  const reportRef = useRef(null);
 
   useEffect(() => {
-    loadData();
+    loadAll();
   }, [auditId]);
 
-  const loadData = async () => {
-    const [auditData, zonesData, ...eqResults] = await Promise.all([
+  const loadAll = async () => {
+    const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters] = await Promise.all([
       base44.entities.Audit.filter({ id: auditId }),
       base44.entities.Zone.filter({ audit_id: auditId }),
-      ...Object.entries(ENTITY_MAP).map(([cat, entity]) =>
-        base44.entities[entity].filter({ audit_id: auditId }).then(rows => [cat, rows])
-      ),
+      base44.entities.MainSwitchboard.filter({ audit_id: auditId }),
+      base44.entities.AdditionalSwitchboard.filter({ audit_id: auditId }),
+      base44.entities.HVACUnit.filter({ audit_id: auditId }),
+      base44.entities.LightingSystem.filter({ audit_id: auditId }),
+      base44.entities.SolarPV.filter({ audit_id: auditId }),
+      base44.entities.ForkliftCharger.filter({ audit_id: auditId }),
+      base44.entities.HotWaterSystem.filter({ audit_id: auditId }),
     ]);
 
-    if (auditData.length) setAudit(auditData[0]);
     const zoneMap = {};
-    zonesData.forEach(z => { zoneMap[z.id] = z.zone_name; });
-    setZones(zonesData);
+    zones.forEach(z => { zoneMap[z.id] = z.zone_name; });
 
-    const flat = [];
-    eqResults.forEach(([category, rows]) => {
-      rows.forEach(item => {
-        flat.push({
-          id: item.id,
-          item_name: getItemName(item, category),
-          value: getValue(item, category),
-          value_unit: getValueUnit(category),
-          category,
-          zone: zoneMap[item.zone_id] || 'Unassigned',
-          notes: getNotes(item, category),
-        });
-      });
+    setData({
+      audit: audits[0] || {},
+      zoneMap,
+      mains,
+      additionals,
+      hvacs,
+      lights,
+      solars,
+      forklifts,
+      hotWaters,
     });
-    setItems(flat);
     setLoading(false);
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   if (loading) {
@@ -115,112 +60,153 @@ export default function ClientReport() {
     );
   }
 
+  const { audit } = data;
+
   return (
     <>
-      {/* Print Styles */}
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          .print-page { padding: 0 !important; }
-          body { background: white !important; }
-          .report-section { break-inside: avoid; }
-          table { break-inside: avoid; }
-          thead { display: table-header-group; }
+          body { background: white !important; margin: 0; }
+          .report-page { padding: 0 !important; margin: 0 !important; }
+          .page-break { page-break-before: always; }
+          .avoid-break { page-break-inside: avoid; }
+          @page { margin: 15mm; size: A4; }
         }
+        .report-body { background: #f4f6f5; }
+        .teal { color: #1B4040; }
+        .bg-teal { background-color: #1B4040; }
+        .border-teal { border-color: #1B4040; }
+        .bg-teal-light { background-color: #e8f0ef; }
+        .decorative-lines {
+          position: absolute;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .decorative-lines svg { opacity: 0.08; }
       `}</style>
 
-      <div ref={reportRef} className="space-y-8 print-page">
-        {/* Controls Bar */}
-        <div className="no-print flex items-center justify-between">
-          <button
-            onClick={() => navigate(`/audit/${auditId}/report`)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Report
-          </button>
-          <div className="flex items-center gap-2">
-            {/* Grouping Toggle */}
-            <div className="flex items-center bg-muted rounded-lg p-1 gap-1">
-              <button
-                onClick={() => setGroupBy('category')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  groupBy === 'category' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-                By Category
-              </button>
-              <button
-                onClick={() => setGroupBy('zone')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  groupBy === 'zone' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                By Zone
-              </button>
-            </div>
-            <Button size="sm" onClick={handlePrint} className="text-xs">
-              <Printer className="w-3.5 h-3.5 mr-1.5" />
-              Print / PDF
-            </Button>
-          </div>
-        </div>
+      {/* Toolbar */}
+      <div className="no-print flex items-center justify-between mb-6">
+        <button
+          onClick={() => navigate(`/audit/${auditId}/report`)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Report
+        </button>
+        <button
+          onClick={() => window.print()}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-teal hover:opacity-90 transition-opacity"
+        >
+          <Printer className="w-4 h-4" />
+          Print / Save PDF
+        </button>
+      </div>
 
-        {/* Report Header */}
-        <div className="report-section border-b border-border pb-8">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <Leaf className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <span className="text-sm font-semibold text-primary">Sustainability Wise</span>
+      {/* Report Document */}
+      <div className="report-body rounded-2xl overflow-hidden shadow-xl report-page">
+        <ReportHeader audit={audit} />
+
+        <div className="px-10 py-8 space-y-12" style={{ background: '#f4f6f5' }}>
+          {/* Executive Summary */}
+          <section className="avoid-break">
+            <SectionTitle number="Executive Summary" plain />
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <p className="text-sm leading-relaxed" style={{ color: '#2c4a4a' }}>
+                This report details the findings of a comprehensive energy audit conducted at the{' '}
+                <strong>{audit.site_name}</strong> facility located at <strong>{audit.site_address}</strong>.
+                The audit assessed the site's electrical infrastructure, HVAC, lighting, solar PV potential,
+                forklift charging operations, and hot water systems. The goal of this assessment is to establish
+                a baseline of current energy-consuming assets and identify opportunities for efficiency upgrades,
+                load management, and emissions reductions.
+              </p>
+              <div className="mt-4 grid grid-cols-3 gap-4">
+                <InfoBox label="Audit Date" value={moment(audit.audit_date).format('MMMM D, YYYY')} />
+                <InfoBox label="Inspector" value={audit.inspector_name} />
+                <InfoBox label="Status" value={audit.status} />
               </div>
-              <h1 className="text-3xl font-bold text-foreground tracking-tight">{audit?.site_name}</h1>
-              <p className="text-base text-muted-foreground mt-1">{audit?.site_address}</p>
             </div>
-            <div className="text-right text-sm text-muted-foreground space-y-1">
-              <p className="font-semibold text-foreground">Energy Audit Report</p>
-              <p>{moment(audit?.audit_date).format('MMMM D, YYYY')}</p>
-              <p>Inspector: {audit?.inspector_name}</p>
-              <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                {audit?.status}
-              </span>
-            </div>
-          </div>
-        </div>
+          </section>
 
-        {/* KPI Cards */}
-        <div className="report-section">
-          <ClientReportKPIs items={items} groupBy={groupBy} zones={zones} />
-        </div>
-
-        {/* Chart */}
-        <div className="report-section">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            {groupBy === 'category' ? 'Energy Load by Category' : 'Equipment Distribution by Zone'}
-          </h2>
-          <ClientReportChart items={items} groupBy={groupBy} />
-        </div>
-
-        {/* Grouped Tables */}
-        <div className="report-section">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            {groupBy === 'category' ? 'Detailed Findings by Category' : 'Detailed Findings by Zone'}
-          </h2>
-          <ClientReportTables items={items} groupBy={groupBy} />
+          <ReportElectrical mains={data.mains} additionals={data.additionals} zoneMap={data.zoneMap} />
+          <ReportHVAC hvacs={data.hvacs} zoneMap={data.zoneMap} />
+          <ReportLighting lights={data.lights} zoneMap={data.zoneMap} />
+          <ReportSolar solars={data.solars} zoneMap={data.zoneMap} />
+          <ReportForklift forklifts={data.forklifts} zoneMap={data.zoneMap} />
+          <ReportHotWater hotWaters={data.hotWaters} zoneMap={data.zoneMap} />
+          <ReportObservations
+            lights={data.lights}
+            solars={data.solars}
+            forklifts={data.forklifts}
+            hotWaters={data.hotWaters}
+          />
         </div>
 
         {/* Footer */}
-        <div className="report-section border-t border-border pt-6 text-center">
-          <p className="text-xs text-muted-foreground">
-            This report was generated by Sustainability Wise Energy Audit Platform.
-            Report date: {moment().format('MMMM D, YYYY')}. Confidential.
-          </p>
+        <div className="px-10 py-5 text-center text-xs" style={{ background: '#1B4040', color: '#a0c4c4' }}>
+          Prepared by Sustainability Wise &nbsp;|&nbsp; Confidential Energy Audit Report &nbsp;|&nbsp;{' '}
+          {moment().format('MMMM YYYY')} &nbsp;|&nbsp; {audit.site_name}
         </div>
       </div>
     </>
+  );
+}
+
+export function SectionTitle({ number, title, plain }) {
+  if (plain) {
+    return (
+      <h2 className="text-lg font-bold uppercase tracking-widest mb-4" style={{ color: '#1B4040' }}>
+        {number}
+      </h2>
+    );
+  }
+  return (
+    <div className="flex items-baseline gap-3 mb-5">
+      <span className="text-2xl font-black" style={{ color: '#1B4040' }}>{number}.</span>
+      <h2 className="text-lg font-bold uppercase tracking-widest" style={{ color: '#1B4040' }}>{title}</h2>
+    </div>
+  );
+}
+
+export function InfoBox({ label, value }) {
+  return (
+    <div className="rounded-lg p-3" style={{ background: '#e8f0ef' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#1B4040' }}>{label}</p>
+      <p className="text-sm font-medium" style={{ color: '#2c4a4a' }}>{value || '—'}</p>
+    </div>
+  );
+}
+
+export function FieldRow({ label, value }) {
+  return (
+    <div className="flex gap-2 py-2 border-b border-gray-100 last:border-0">
+      <span className="text-xs font-semibold w-48 flex-shrink-0" style={{ color: '#1B4040' }}>{label}</span>
+      <span className="text-xs text-gray-700">{value || '—'}</span>
+    </div>
+  );
+}
+
+export function PhotoBox({ url, label }) {
+  if (url) {
+    return (
+      <div className="rounded-lg overflow-hidden border border-gray-200">
+        <img src={url} alt={label || 'Photo'} className="w-full h-40 object-cover" />
+        {label && <p className="text-xs text-center py-1 text-gray-500">{label}</p>}
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-lg border-2 border-dashed border-gray-200 h-40 flex items-center justify-center">
+      <p className="text-xs text-gray-400 text-center px-4">📷 {label || 'Photo placeholder'}</p>
+    </div>
+  );
+}
+
+export function SubSectionTitle({ title }) {
+  return (
+    <h3 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: '#1B4040', borderColor: '#1B4040' }}>
+      {title}
+    </h3>
   );
 }
