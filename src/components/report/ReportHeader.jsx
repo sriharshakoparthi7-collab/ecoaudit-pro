@@ -19,12 +19,13 @@ export default function ReportHeader({ audit }) {
       <div className="relative z-10 px-10 py-10">
         {/* Logo Row */}
         <div className="flex items-center mb-8">
-          <img
-            src="https://media.base44.com/images/public/69c364356b11e052afca1916/71cb625a4_image.png"
-            alt="Sustainability Wise"
-            className="h-14 object-contain"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
+          <div className="rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.95)' }}>
+            <img
+              src="https://media.base44.com/images/public/69c364356b11e052afca1916/5f5fd9a97_Untitleddesign2.png"
+              alt="Sustainability Wise"
+              className="h-12 object-contain"
+            />
+          </div>
         </div>
 
         {/* Main Title */}
