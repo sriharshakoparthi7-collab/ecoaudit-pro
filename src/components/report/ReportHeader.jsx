@@ -19,11 +19,11 @@ export default function ReportHeader({ audit }) {
       <div className="relative z-10 px-10 py-10">
         {/* Logo Row */}
         <div className="flex items-center mb-8">
-          <div className="rounded-xl overflow-hidden flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.95)', width: '200px', height: '68px' }}>
+          <div className="rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.95)', width: '200px', height: '72px', padding: '8px 12px' }}>
             <img
               src="https://media.base44.com/images/public/69c364356b11e052afca1916/5f5fd9a97_Untitleddesign2.png"
               alt="Sustainability Wise"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transform: 'scale(1.55)', transformOrigin: 'center center' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
           </div>
         </div>
