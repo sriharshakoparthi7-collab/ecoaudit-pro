@@ -18,14 +18,13 @@ export default function ReportHeader({ audit }) {
 
       <div className="relative z-10 px-10 py-10">
         {/* Logo Row */}
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#2d9e6b' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
-              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-            </svg>
-          </div>
-          <span className="text-sm font-bold tracking-wider" style={{ color: '#a0d4c4' }}>SUSTAINABILITY WISE</span>
+        <div className="flex items-center mb-8">
+          <img
+            src="https://media.base44.com/images/public/69c364356b11e052afca1916/71cb625a4_image.png"
+            alt="Sustainability Wise"
+            className="h-14 object-contain"
+            style={{ filter: 'brightness(0) invert(1)' }}
+          />
         </div>
 
         {/* Main Title */}
