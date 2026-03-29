@@ -67,11 +67,12 @@ export default function ClientReport() {
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; margin: 0; }
+          nav, header, aside, [data-sidebar] { display: none !important; }
+          body { background: white !important; margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .report-page { padding: 0 !important; margin: 0 !important; }
           .page-break { page-break-before: always; }
           .avoid-break { page-break-inside: avoid; }
-          @page { margin: 15mm; size: A4; }
+          @page { margin: 10mm; size: A4; }
         }
         .report-body { background: #f4f6f5; }
         .teal { color: #1B4040; }
@@ -105,7 +106,7 @@ export default function ClientReport() {
       </div>
 
       {/* Report Document */}
-      <div className="report-body rounded-2xl overflow-hidden shadow-xl report-page">
+      <div className="report-body rounded-2xl overflow-hidden shadow-xl report-page" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
         <div className="px-10 py-8 space-y-12" style={{ background: '#f4f6f5' }}>
