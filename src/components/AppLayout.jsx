@@ -1,4 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
 import { LayoutDashboard, Leaf } from 'lucide-react';
 
 export default function AppLayout() {
@@ -15,15 +16,23 @@ export default function AppLayout() {
             </div>
             <span className="font-semibold text-foreground text-sm">Sustainability Wise</span>
           </Link>
-          {location.pathname !== '/' && (
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          <div className="flex items-center gap-3">
+            {location.pathname !== '/' && (
+              <Link
+                to="/"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Dashboard
+              </Link>
+            )}
+            <button
+              onClick={() => base44.auth.logout()}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-red-500 transition-colors border border-border rounded-md px-3 py-1.5"
             >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              Dashboard
-            </Link>
-          )}
+              Log Out
+            </button>
+          </div>
         </div>
       </header>
 
