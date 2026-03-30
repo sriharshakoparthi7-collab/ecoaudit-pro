@@ -2,7 +2,7 @@ import { SectionTitle, SubSectionTitle, FieldRow, PhotoBox } from '../../pages/C
 
 export default function ReportLighting({ lights, zoneMap }) {
   return (
-    <section data-pdf-section>
+    <section>
       <SectionTitle number="3" title="Lighting Systems" />
       <p className="text-xs text-gray-500 mb-5">
         An assessment of the site's lighting fixtures, zoning, and controls to identify efficiency and automation opportunities.

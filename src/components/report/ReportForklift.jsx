@@ -2,7 +2,7 @@ import { SectionTitle, SubSectionTitle, FieldRow, PhotoBox } from '../../pages/C
 
 export default function ReportForklift({ forklifts, zoneMap }) {
   return (
-    <section data-pdf-section>
+    <section>
       <SectionTitle number="5" title="Forklift Charging Operations" />
       <p className="text-xs text-gray-500 mb-5">
         Analysis of material handling equipment charging to optimize power draw and utilize solar generation.

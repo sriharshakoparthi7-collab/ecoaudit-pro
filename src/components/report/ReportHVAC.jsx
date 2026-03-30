@@ -2,7 +2,7 @@ import { SectionTitle, FieldRow, PhotoBox } from '../../pages/ClientReport';
 
 export default function ReportHVAC({ hvacs, zoneMap }) {
   return (
-    <section data-pdf-section>
+    <section>
       <SectionTitle number="2" title="HVAC Systems" />
       <p className="text-xs text-gray-500 mb-5">
         Heating, Ventilation, and Air Conditioning account for a significant portion of site energy use. The following units were logged.

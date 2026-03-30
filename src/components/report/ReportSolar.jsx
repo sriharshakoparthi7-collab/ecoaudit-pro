@@ -2,7 +2,7 @@ import { SectionTitle, SubSectionTitle, FieldRow, PhotoBox } from '../../pages/C
 
 export default function ReportSolar({ solars, zoneMap }) {
   return (
-    <section data-pdf-section>
+    <section>
       <SectionTitle number="4" title="Solar PV Infrastructure" />
       <p className="text-xs text-gray-500 mb-5">
         Assessment of existing renewable generation and potential for expansion.
