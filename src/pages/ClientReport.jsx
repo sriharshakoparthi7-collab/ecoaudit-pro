@@ -29,24 +29,44 @@ export default function ClientReport() {
     const { default: jsPDF } = await import('jspdf');
     const { default: html2canvas } = await import('html2canvas');
     const el = reportRef.current;
+
+    // Force A4-equivalent pixel width before capture so layout matches the PDF
+    const prevWidth = el.style.width;
+    const prevMaxWidth = el.style.maxWidth;
+    el.style.width = '794px';
+    el.style.maxWidth = '794px';
+    // Let the browser re-layout
+    await new Promise(r => setTimeout(r, 300));
+
     const canvas = await html2canvas(el, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: '#f4f6f5',
+      backgroundColor: '#ffffff',
       logging: false,
+      width: 794,
+      height: el.scrollHeight,
+      windowWidth: 794,
+      windowHeight: el.scrollHeight,
     });
+
+    // Restore
+    el.style.width = prevWidth;
+    el.style.maxWidth = prevMaxWidth;
+
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
     const imgH = (canvas.height * pdfW) / canvas.width;
+
     let y = 0;
     while (y < imgH) {
+      if (y > 0) pdf.addPage();
       pdf.addImage(imgData, 'JPEG', 0, -y, pdfW, imgH);
       y += pdfH;
-      if (y < imgH) pdf.addPage();
     }
+
     const siteName = data?.audit?.site_name || 'Energy-Audit';
     pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
     setExporting(false);
@@ -129,7 +149,7 @@ export default function ClientReport() {
       <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-12px' }} style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
-        <div className="report-content space-y-12" style={{ background: '#f7f8f8' }}>
+        <div className="report-content space-y-8" style={{ background: '#f7f8f8' }}>
           {/* Executive Summary */}
           <section className="avoid-break">
             <SectionTitle number="Executive Summary" plain />
