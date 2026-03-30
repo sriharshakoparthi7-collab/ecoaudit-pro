@@ -29,99 +29,25 @@ export default function ClientReport() {
     const { default: jsPDF } = await import('jspdf');
     const { default: html2canvas } = await import('html2canvas');
     const el = reportRef.current;
-
-    // Force A4-equivalent pixel width before capture
-    const prevWidth = el.style.width;
-    const prevMaxWidth = el.style.maxWidth;
-    el.style.width = '794px';
-    el.style.maxWidth = '794px';
-    await new Promise(r => setTimeout(r, 300));
-
     const canvas = await html2canvas(el, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: '#f7f8f8',
+      backgroundColor: '#f4f6f5',
       logging: false,
-      width: 794,
-      height: el.scrollHeight,
-      windowWidth: 794,
-      windowHeight: el.scrollHeight,
     });
-
-    el.style.width = prevWidth;
-    el.style.maxWidth = prevMaxWidth;
-
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
-
-    const HEADER_H = 10; // mm reserved at top for header (pages 2+)
-    const FOOTER_H = 10; // mm reserved at bottom for footer
-    const MARGIN = 0;    // image starts at left edge
-
-    // Page 1 uses full height (no header), subsequent pages reserve header space
-    const page1ContentH = pdfH - FOOTER_H;
-    const pageContentH = pdfH - HEADER_H - FOOTER_H;
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const imgTotalH = (canvas.height * pdfW) / canvas.width; // total image height in mm
-
-    // Calculate how many pages we need
-    let pages = 1;
-    if (imgTotalH > page1ContentH) {
-      pages += Math.ceil((imgTotalH - page1ContentH) / pageContentH);
+    const imgH = (canvas.height * pdfW) / canvas.width;
+    let y = 0;
+    while (y < imgH) {
+      pdf.addImage(imgData, 'JPEG', 0, -y, pdfW, imgH);
+      y += pdfH;
+      if (y < imgH) pdf.addPage();
     }
-
-    const siteName = data?.audit?.site_name || 'Energy Audit';
-    const auditDate = data?.audit?.audit_date ? moment(data.audit.audit_date).format('DD MMM YYYY') : '';
-
-    for (let i = 0; i < pages; i++) {
-      if (i > 0) pdf.addPage();
-
-      // How far into the image this page starts (in mm)
-      const imgOffsetMm = i === 0 ? 0 : page1ContentH + (i - 1) * pageContentH;
-      // Top of content area on this PDF page
-      const contentTop = i === 0 ? 0 : HEADER_H;
-
-      // Draw the image slice
-      pdf.addImage(imgData, 'JPEG', MARGIN, contentTop - imgOffsetMm, pdfW, imgTotalH);
-
-      // Clip: white bar at top (for pages 2+) and at bottom to hide bleed
-      if (i > 0) {
-        pdf.setFillColor(247, 248, 248);
-        pdf.rect(0, 0, pdfW, HEADER_H, 'F');
-      }
-      pdf.setFillColor(247, 248, 248);
-      pdf.rect(0, pdfH - FOOTER_H, pdfW, FOOTER_H, 'F');
-
-      // Header (pages 2+)
-      if (i > 0) {
-        pdf.setFillColor(27, 64, 64);
-        pdf.rect(0, 0, pdfW, HEADER_H - 1, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(8);
-        pdf.setTextColor(255, 255, 255);
-        pdf.text('SUSTAINABILITY WISE', 8, 6.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(7);
-        pdf.setTextColor(160, 196, 196);
-        pdf.text(`${siteName}  |  Energy Audit Report  |  ${auditDate}`, pdfW / 2, 6.5, { align: 'center' });
-        pdf.setTextColor(160, 196, 196);
-        pdf.text(`Page ${i + 1} of ${pages}`, pdfW - 8, 6.5, { align: 'right' });
-      }
-
-      // Footer (all pages)
-      pdf.setFillColor(27, 64, 64);
-      pdf.rect(0, pdfH - FOOTER_H + 1, pdfW, FOOTER_H - 1, 'F');
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(7);
-      pdf.setTextColor(160, 196, 196);
-      pdf.text('Prepared by Sustainability Wise  |  Confidential Energy Audit Report', pdfW / 2, pdfH - 3.5, { align: 'center' });
-      pdf.setTextColor(100, 160, 160);
-      pdf.text(`${siteName}  |  ${auditDate}`, pdfW / 2, pdfH - 1, { align: 'center' });
-    }
-
+    const siteName = data?.audit?.site_name || 'Energy-Audit';
     pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
     setExporting(false);
   };
@@ -203,7 +129,7 @@ export default function ClientReport() {
       <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-12px' }} style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
-        <div className="report-content space-y-8" style={{ background: '#f7f8f8' }}>
+        <div className="report-content space-y-12" style={{ background: '#f7f8f8' }}>
           {/* Executive Summary */}
           <section className="avoid-break">
             <SectionTitle number="Executive Summary" plain />
