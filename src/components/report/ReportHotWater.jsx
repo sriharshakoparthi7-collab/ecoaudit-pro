@@ -2,7 +2,7 @@ import { SectionTitle, SubSectionTitle, FieldRow, PhotoBox } from '../../pages/C
 
 export default function ReportHotWater({ hotWaters, zoneMap }) {
   return (
-    <section>
+    <section data-pdf-section>
       <SectionTitle number="6" title="Domestic Hot Water (DHW) Systems" />
       <p className="text-xs text-gray-500 mb-5">
         Review of water heating systems for efficiency and thermal loss.

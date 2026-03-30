@@ -2,7 +2,7 @@ import { SectionTitle, SubSectionTitle, FieldRow, PhotoBox } from '../../pages/C
 
 export default function ReportElectrical({ mains, additionals, zoneMap }) {
   return (
-    <section>
+    <section data-pdf-section>
       <SectionTitle number="1" title="Electrical Infrastructure" />
 
       {/* 1.1 Main Switchboard */}

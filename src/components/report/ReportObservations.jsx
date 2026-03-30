@@ -42,7 +42,7 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
   const hasNoTempValve = hotWaters.some(h => h.tempering_valve === 'No');
 
   return (
-    <section>
+    <section data-pdf-section>
       <SectionTitle number="7" title="Consolidated Observations for Energy Improvements" />
       <p className="text-xs text-gray-500 mb-5">
         This section aggregates the auditor's field notes into actionable insights for the client.

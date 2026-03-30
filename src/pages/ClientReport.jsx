@@ -30,12 +30,16 @@ export default function ClientReport() {
     const { default: html2canvas } = await import('html2canvas');
     const el = reportRef.current;
 
-    // Force A4-equivalent pixel width before capture
+    // Force A4 width before capture
     const prevWidth = el.style.width;
     const prevMaxWidth = el.style.maxWidth;
     el.style.width = '794px';
     el.style.maxWidth = '794px';
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 400));
+
+    // Record section break positions BEFORE capturing
+    const sectionEls = Array.from(el.querySelectorAll('[data-pdf-section]'));
+    const sectionTopsCss = sectionEls.map(s => s.offsetTop); // CSS px from el top
 
     const canvas = await html2canvas(el, {
       scale: 2,
@@ -55,71 +59,105 @@ export default function ClientReport() {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
+    const HEADER_H = 12; // mm
+    const FOOTER_H = 12; // mm
+    const CONTENT_H = pdfH - HEADER_H - FOOTER_H; // mm for pages 2+
+    const PAGE1_H = pdfH - FOOTER_H; // mm for page 1 (no header)
 
-    const HEADER_H = 10; // mm reserved at top for header (pages 2+)
-    const FOOTER_H = 10; // mm reserved at bottom for footer
-    const MARGIN = 0;    // image starts at left edge
+    const canvasScale = canvas.width / 794; // typically 2
+    const pxPerMm = canvas.width / pdfW;
 
-    // Page 1 uses full height (no header), subsequent pages reserve header space
-    const page1ContentH = pdfH - FOOTER_H;
-    const pageContentH = pdfH - HEADER_H - FOOTER_H;
+    // Convert CSS px section tops to canvas px
+    const sectionBreaksPx = sectionTopsCss.map(t => Math.floor(t * canvasScale));
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const imgTotalH = (canvas.height * pdfW) / canvas.width; // total image height in mm
+    // Build full list of page start positions (canvas px)
+    // Each section starts a new page; subdivide if a section is taller than one page
+    const buildPageBreaks = () => {
+      const breaks = [0];
+      const allBreaks = [...new Set([0, ...sectionBreaksPx])].sort((a, b) => a - b);
 
-    // Calculate how many pages we need
-    let pages = 1;
-    if (imgTotalH > page1ContentH) {
-      pages += Math.ceil((imgTotalH - page1ContentH) / pageContentH);
-    }
+      for (let i = 0; i < allBreaks.length; i++) {
+        const segStart = allBreaks[i];
+        const segEnd = i + 1 < allBreaks.length ? allBreaks[i + 1] : canvas.height;
+
+        if (i > 0) breaks.push(segStart);
+
+        // If this segment overflows a single page, add internal breaks
+        const isFirstPage = breaks.length === 1 && i === 0;
+        const slotPx = (isFirstPage ? PAGE1_H : CONTENT_H) * pxPerMm;
+        let cursor = segStart;
+        let firstSlice = true;
+        while (true) {
+          const slot = firstSlice ? (isFirstPage ? PAGE1_H : CONTENT_H) * pxPerMm : CONTENT_H * pxPerMm;
+          cursor += slot;
+          firstSlice = false;
+          if (cursor < segEnd - 10) {
+            breaks.push(Math.floor(cursor));
+          } else {
+            break;
+          }
+        }
+      }
+      return [...new Set(breaks)].sort((a, b) => a - b);
+    };
+
+    const pageBreaks = buildPageBreaks();
+    const totalPages = pageBreaks.length;
 
     const siteName = data?.audit?.site_name || 'Energy Audit';
     const auditDate = data?.audit?.audit_date ? moment(data.audit.audit_date).format('DD MMM YYYY') : '';
 
-    for (let i = 0; i < pages; i++) {
+    // Helper: slice canvas from startPx to endPx, return {dataUrl, heightMm}
+    const sliceCanvas = (startPx, endPx) => {
+      const h = Math.min(Math.ceil(endPx - startPx), canvas.height - Math.floor(startPx));
+      if (h <= 0) return null;
+      const sc = document.createElement('canvas');
+      sc.width = canvas.width;
+      sc.height = h;
+      sc.getContext('2d').drawImage(canvas, 0, Math.floor(startPx), canvas.width, h, 0, 0, canvas.width, h);
+      return { dataUrl: sc.toDataURL('image/jpeg', 0.95), heightMm: h / pxPerMm };
+    };
+
+    for (let i = 0; i < totalPages; i++) {
       if (i > 0) pdf.addPage();
 
-      // How far into the image this page starts (in mm)
-      const imgOffsetMm = i === 0 ? 0 : page1ContentH + (i - 1) * pageContentH;
-      // Top of content area on this PDF page
-      const contentTop = i === 0 ? 0 : HEADER_H;
+      const startPx = pageBreaks[i];
+      const endPx = i + 1 < totalPages ? pageBreaks[i + 1] : canvas.height;
+      const isFirstPage = i === 0;
+      const contentTopMm = isFirstPage ? 0 : HEADER_H;
+      const slotMm = isFirstPage ? PAGE1_H : CONTENT_H;
 
-      // Draw the image slice
-      pdf.addImage(imgData, 'JPEG', MARGIN, contentTop - imgOffsetMm, pdfW, imgTotalH);
-
-      // Clip: white bar at top (for pages 2+) and at bottom to hide bleed
-      if (i > 0) {
-        pdf.setFillColor(247, 248, 248);
-        pdf.rect(0, 0, pdfW, HEADER_H, 'F');
+      const slice = sliceCanvas(startPx, endPx);
+      if (slice) {
+        const drawH = Math.min(slice.heightMm, slotMm);
+        pdf.addImage(slice.dataUrl, 'JPEG', 0, contentTopMm, pdfW, drawH);
       }
-      pdf.setFillColor(247, 248, 248);
-      pdf.rect(0, pdfH - FOOTER_H, pdfW, FOOTER_H, 'F');
 
       // Header (pages 2+)
-      if (i > 0) {
+      if (!isFirstPage) {
         pdf.setFillColor(27, 64, 64);
         pdf.rect(0, 0, pdfW, HEADER_H - 1, 'F');
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(8);
         pdf.setTextColor(255, 255, 255);
-        pdf.text('SUSTAINABILITY WISE', 8, 6.5);
+        pdf.text('SUSTAINABILITY WISE', 8, 7.5);
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
         pdf.setTextColor(160, 196, 196);
-        pdf.text(`${siteName}  |  Energy Audit Report  |  ${auditDate}`, pdfW / 2, 6.5, { align: 'center' });
-        pdf.setTextColor(160, 196, 196);
-        pdf.text(`Page ${i + 1} of ${pages}`, pdfW - 8, 6.5, { align: 'right' });
+        pdf.text(`${siteName}  |  Energy Audit Report  |  ${auditDate}`, pdfW / 2, 7.5, { align: 'center' });
+        pdf.text(`Page ${i + 1} of ${totalPages}`, pdfW - 8, 7.5, { align: 'right' });
       }
 
       // Footer (all pages)
+      const footerY = pdfH - FOOTER_H + 1;
       pdf.setFillColor(27, 64, 64);
-      pdf.rect(0, pdfH - FOOTER_H + 1, pdfW, FOOTER_H - 1, 'F');
+      pdf.rect(0, pdfH - FOOTER_H, pdfW, FOOTER_H, 'F');
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(7);
       pdf.setTextColor(160, 196, 196);
-      pdf.text('Prepared by Sustainability Wise  |  Confidential Energy Audit Report', pdfW / 2, pdfH - 3.5, { align: 'center' });
-      pdf.setTextColor(100, 160, 160);
-      pdf.text(`${siteName}  |  ${auditDate}`, pdfW / 2, pdfH - 1, { align: 'center' });
+      pdf.text('Prepared by Sustainability Wise  |  Confidential Energy Audit Report', pdfW / 2, footerY + 4, { align: 'center' });
+      pdf.setTextColor(100, 170, 160);
+      pdf.text(`${siteName}  |  ${auditDate}`, pdfW / 2, footerY + 8.5, { align: 'center' });
     }
 
     pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
@@ -205,7 +243,7 @@ export default function ClientReport() {
 
         <div className="report-content space-y-8" style={{ background: '#f7f8f8' }}>
           {/* Executive Summary */}
-          <section className="avoid-break">
+          <section className="avoid-break" data-pdf-section>
             <SectionTitle number="Executive Summary" plain />
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <p className="text-sm leading-relaxed" style={{ color: '#2c4a4a' }}>
