@@ -15,7 +15,7 @@ export default function ReportHVAC({ hvacs, zoneMap }) {
       ) : (
         <div className="space-y-4">
           {hvacs.map((unit, i) => (
-            <div key={unit.id} className="bg-white rounded-xl p-6 shadow-sm avoid-break">
+            <div key={unit.id} className="bg-white rounded-xl p-6 shadow-sm card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-1 h-5 rounded-full" style={{ background: '#1B4040' }} />
                 <h3 className="text-sm font-bold" style={{ color: '#1B4040' }}>
@@ -43,9 +43,12 @@ export default function ReportHVAC({ hvacs, zoneMap }) {
               </div>
 
               {(unit.photo || unit.nameplate_photos) && (
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px', pageBreakInside: 'avoid' }}>
-                  <PhotoBox url={unit.photo} label="HVAC Unit" />
-                  <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
+                <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <PhotoBox url={unit.photo} label="HVAC Unit" />
+                    <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
+                  </div>
                 </div>
               )}
             </div>

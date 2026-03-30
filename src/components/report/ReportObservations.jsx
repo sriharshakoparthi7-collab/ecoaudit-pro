@@ -25,7 +25,7 @@ function Bullet({ label, value }) {
 
 function BulletPoint({ children }) {
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px' }}>
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
       <span style={{ flexShrink: 0, color: '#1B4040', fontWeight: 700, marginTop: '1px' }}>⚡</span>
       <span style={{ flex: 1, color: '#333333' }}>{children}</span>
     </div>

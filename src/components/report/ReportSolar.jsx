@@ -15,7 +15,7 @@ export default function ReportSolar({ solars, zoneMap }) {
       ) : (
         <div className="space-y-4">
           {solars.map((pv, i) => (
-            <div key={pv.id} className="bg-white rounded-xl p-6 shadow-sm avoid-break">
+            <div key={pv.id} className="bg-white rounded-xl p-6 shadow-sm card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <SubSectionTitle title={`4.${i + 1} Existing System`} />
@@ -34,8 +34,11 @@ export default function ReportSolar({ solars, zoneMap }) {
               </div>
 
               {pv.roof_photo && (
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px', pageBreakInside: 'avoid' }}>
-                  <PhotoBox url={pv.roof_photo} label="Roof / Panels" />
+                <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <PhotoBox url={pv.roof_photo} label="Roof / Panels" />
+                  </div>
                 </div>
               )}
             </div>

@@ -6,7 +6,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
       <SectionTitle number="1" title="Electrical Infrastructure" />
 
       {/* 1.1 Main Switchboard */}
-      <div className="bg-white rounded-xl p-6 shadow-sm mb-4 avoid-break">
+      <div className="bg-white rounded-xl p-6 shadow-sm mb-4 card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
         <SubSectionTitle title="1.1 Main Switchboard (MSB)" />
         <p className="text-xs text-gray-500 mb-4">
           The main electrical distribution point for the facility was assessed to determine current capacity and sub-circuit distribution.
@@ -25,8 +25,8 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Zone" value={zoneMap[msb.zone_id]} />
               <FieldRow label="Auditor Comments" value={msb.comments} />
               {msb.photo && (
-                <div style={{ marginTop: '12px' }}>
-                  <p style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px' }}>Photographic Evidence</p>
+                <div className="photo-evidence" style={{ marginTop: '12px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={msb.photo} label="Main Switchboard" />
                   </div>
@@ -38,7 +38,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
       </div>
 
       {/* 1.2 Additional Switchboards */}
-      <div className="bg-white rounded-xl p-6 shadow-sm avoid-break">
+      <div className="bg-white rounded-xl p-6 shadow-sm card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
         <SubSectionTitle title="1.2 Additional Switchboards" />
         <p className="text-xs text-gray-500 mb-4">
           Summary of localized distribution boards across the site.
@@ -78,10 +78,13 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               </table>
             </div>
             {additionals.some(sb => sb.photo) && (
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
-                {additionals.filter(sb => sb.photo).slice(0, 2).map(sb => (
-                  <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
-                ))}
+              <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '12px' }}>
+                <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  {additionals.filter(sb => sb.photo).slice(0, 2).map(sb => (
+                    <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
+                  ))}
+                </div>
               </div>
             )}
           </>

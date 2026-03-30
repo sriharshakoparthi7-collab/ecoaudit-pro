@@ -168,6 +168,11 @@ export default function ClientReport() {
         .page-break { page-break-before: always; break-before: always; }
         .keep-with-next { page-break-after: avoid; break-after: avoid; }
         .section-block { page-break-inside: avoid; break-inside: avoid; }
+        .report-body p, .report-body li { orphans: 2; widows: 2; }
+        .report-body tr { page-break-inside: avoid; break-inside: avoid; }
+        .report-body .card-block { page-break-inside: avoid; break-inside: avoid; }
+        .report-body .photo-evidence { page-break-inside: avoid; break-inside: avoid; }
+        .report-content { padding-bottom: 3cm; }
         @media print {
           .no-print { display: none !important; }
           nav, header, aside { display: none !important; }

@@ -15,7 +15,7 @@ export default function ReportForklift({ forklifts, zoneMap }) {
       ) : (
         <div className="space-y-4">
           {forklifts.map((fc, i) => (
-            <div key={fc.id} className="bg-white rounded-xl p-6 shadow-sm avoid-break">
+            <div key={fc.id} className="bg-white rounded-xl p-6 shadow-sm card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <SubSectionTitle title={`5.${i + 1} Charger Specifications`} />
