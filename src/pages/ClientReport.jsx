@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Download, Loader2 } from 'lucide-react';
+import { ArrowLeft, Download, Loader2, Settings2 } from 'lucide-react';
 import moment from 'moment';
+import DownloadOptionsDialog from '../components/report/DownloadOptionsDialog';
 import ReportHeader from '../components/report/ReportHeader';
 import ReportElectrical from '../components/report/ReportElectrical';
 import ReportHVAC from '../components/report/ReportHVAC';
@@ -19,13 +20,29 @@ export default function ClientReport() {
   const [exporting, setExporting] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
   useEffect(() => {
     loadAll();
   }, [auditId]);
 
-  const exportPDF = async () => {
+  const exportPDF = async (config) => {
     setExporting(true);
+    // Build filtered data based on config
+    const filtered = config ? {
+      ...data,
+      hvacs: config.sections.has('hvac') ? (data.hvacs.filter(i => config.items.hvac?.has(i.id) ?? true)) : [],
+      lights: config.sections.has('lighting') ? (data.lights.filter(i => config.items.lighting?.has(i.id) ?? true)) : [],
+      solars: config.sections.has('solar') ? (data.solars.filter(i => config.items.solar?.has(i.id) ?? true)) : [],
+      forklifts: config.sections.has('forklift') ? (data.forklifts.filter(i => config.items.forklift?.has(i.id) ?? true)) : [],
+      hotWaters: config.sections.has('hotwater') ? (data.hotWaters.filter(i => config.items.hotwater?.has(i.id) ?? true)) : [],
+      mains: config.sections.has('electrical') ? data.mains : [],
+      additionals: config.sections.has('electrical') ? data.additionals : [],
+      _showObservations: config.sections.has('observations'),
+    } : data;
+    setExportFilter(filtered);
+    // Wait for re-render then capture
+    await new Promise(r => setTimeout(r, 300));
     const { default: jsPDF } = await import('jspdf');
     const { default: html2canvas } = await import('html2canvas');
     const el = reportRef.current;
@@ -121,8 +138,12 @@ export default function ClientReport() {
     }
 
     pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
+    setExportFilter(null);
     setExporting(false);
   };
+
+  const [exportFilter, setExportFilter] = useState(null);
+  const displayData = exportFilter || data;
 
   const loadAll = async () => {
     const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters] = await Promise.all([
@@ -192,13 +213,13 @@ export default function ClientReport() {
           Back to Report
         </button>
         <button
-          onClick={exportPDF}
+          onClick={() => setShowDownloadDialog(true)}
           disabled={exporting}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60"
           style={{ background: '#1B4040' }}
         >
-          {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-          {exporting ? 'Generating PDF...' : 'Export PDF'}
+          {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings2 className="w-4 h-4" />}
+          {exporting ? 'Generating PDF...' : 'Download Options'}
         </button>
       </div>
 
@@ -227,19 +248,30 @@ export default function ClientReport() {
             </div>
           </section>
 
-          <ReportElectrical mains={data.mains} additionals={data.additionals} zoneMap={data.zoneMap} />
-          <ReportHVAC hvacs={data.hvacs} zoneMap={data.zoneMap} />
-          <ReportLighting lights={data.lights} zoneMap={data.zoneMap} />
-          <ReportSolar solars={data.solars} zoneMap={data.zoneMap} />
-          <ReportForklift forklifts={data.forklifts} zoneMap={data.zoneMap} />
-          <ReportHotWater hotWaters={data.hotWaters} zoneMap={data.zoneMap} />
-          <ReportObservations
-            lights={data.lights}
-            solars={data.solars}
-            forklifts={data.forklifts}
-            hotWaters={data.hotWaters}
-          />
+          {(displayData.mains?.length > 0 || displayData.additionals?.length > 0) && (
+                <ReportElectrical mains={displayData.mains} additionals={displayData.additionals} zoneMap={displayData.zoneMap} />
+              )}
+              {displayData.hvacs?.length > 0 && <ReportHVAC hvacs={displayData.hvacs} zoneMap={displayData.zoneMap} />}
+              {displayData.lights?.length > 0 && <ReportLighting lights={displayData.lights} zoneMap={displayData.zoneMap} />}
+              {displayData.solars?.length > 0 && <ReportSolar solars={displayData.solars} zoneMap={displayData.zoneMap} />}
+              {displayData.forklifts?.length > 0 && <ReportForklift forklifts={displayData.forklifts} zoneMap={displayData.zoneMap} />}
+              {displayData.hotWaters?.length > 0 && <ReportHotWater hotWaters={displayData.hotWaters} zoneMap={displayData.zoneMap} />}
+              {(displayData._showObservations !== false) && (
+                <ReportObservations
+                  lights={displayData.lights || []}
+                  solars={displayData.solars || []}
+                  forklifts={displayData.forklifts || []}
+                  hotWaters={displayData.hotWaters || []}
+                />
+              )}
         </div>
+
+      <DownloadOptionsDialog
+        open={showDownloadDialog}
+        onClose={() => setShowDownloadDialog(false)}
+        data={data}
+        onExport={exportPDF}
+      />
 
         {/* Footer */}
         <div className="px-10 py-5 text-center text-xs" style={{ background: '#1B4040', color: '#a0c4c4' }}>
