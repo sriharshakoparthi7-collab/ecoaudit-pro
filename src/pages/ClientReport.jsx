@@ -33,21 +33,93 @@ export default function ClientReport() {
       scale: 2,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: '#f4f6f5',
+      backgroundColor: '#f7f8f8',
       logging: false,
     });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const imgH = (canvas.height * pdfW) / canvas.width;
-    let y = 0;
-    while (y < imgH) {
-      pdf.addImage(imgData, 'JPEG', 0, -y, pdfW, imgH);
-      y += pdfH;
-      if (y < imgH) pdf.addPage();
+    const pdfW = pdf.internal.pageSize.getWidth();   // 210mm
+    const pdfH = pdf.internal.pageSize.getHeight();  // 297mm
+
+    const borderInset = 8;       // mm from edge
+    const headerH = 12;          // mm — header band height
+    const footerH = 12;          // mm — footer band height
+    const marginX = borderInset + 2; // content left/right margin
+    const contentTop = borderInset + headerH + 3;  // content starts here
+    const contentBottom = pdfH - borderInset - footerH - 3;
+    const contentW = pdfW - marginX * 2;
+    const contentH = contentBottom - contentTop;   // usable height per page
+
+    const siteName = data?.audit?.site_name || 'Energy Audit';
+    const auditDate = data?.audit?.audit_date
+      ? new Date(data.audit.audit_date).toLocaleDateString('en-AU', { day: '2-digit', month: 'long', year: 'numeric' })
+      : '';
+
+    // Total rendered image height in mm
+    const totalImgH = (canvas.height * contentW) / canvas.width;
+    const totalPages = Math.ceil(totalImgH / contentH);
+
+    const drawBorder = () => {
+      pdf.setDrawColor(44, 62, 80);
+      pdf.setLineWidth(0.6);
+      pdf.rect(borderInset, borderInset, pdfW - borderInset * 2, pdfH - borderInset * 2);
+    };
+
+    const drawHeader = () => {
+      // Header background
+      pdf.setFillColor(27, 64, 64);
+      pdf.rect(borderInset, borderInset, pdfW - borderInset * 2, headerH, 'F');
+      // Left: company
+      pdf.setTextColor(160, 220, 200);
+      pdf.setFontSize(7.5);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('SUSTAINABILITY WISE', marginX, borderInset + 7.5);
+      // Centre: report title
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(`${siteName} — Energy Audit Report`, pdfW / 2, borderInset + 7.5, { align: 'center' });
+      // Right: date
+      pdf.setTextColor(160, 220, 200);
+      pdf.text(auditDate, pdfW - marginX, borderInset + 7.5, { align: 'right' });
+    };
+
+    const drawFooter = (pageNum) => {
+      const footerY = pdfH - borderInset - footerH;
+      // Divider line
+      pdf.setDrawColor(200, 215, 210);
+      pdf.setLineWidth(0.3);
+      pdf.line(marginX, footerY + 2, pdfW - marginX, footerY + 2);
+      // Left text
+      pdf.setTextColor(100, 130, 120);
+      pdf.setFontSize(7);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Sustainability Wise — Confidential Energy Audit Report', marginX, footerY + 8);
+      // Right: page number
+      pdf.text(`Page ${pageNum} of ${totalPages}`, pdfW - marginX, footerY + 8, { align: 'right' });
+    };
+
+    for (let p = 0; p < totalPages; p++) {
+      if (p > 0) pdf.addPage();
+
+      // Slice this page's portion of the canvas
+      const srcYPx = (p * contentH * canvas.width) / contentW;
+      const srcHPx = Math.min((contentH * canvas.width) / contentW, canvas.height - srcYPx);
+
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = Math.ceil(srcHPx);
+      const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, -Math.floor(srcYPx));
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      const sliceH = (sliceCanvas.height * contentW) / canvas.width;
+
+      pdf.addImage(sliceData, 'JPEG', marginX, contentTop, contentW, sliceH);
+
+      drawBorder();
+      drawHeader();
+      drawFooter(p + 1);
     }
-    const siteName = data?.audit?.site_name || 'Energy-Audit';
+
     pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
     setExporting(false);
   };
