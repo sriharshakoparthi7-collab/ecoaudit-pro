@@ -91,31 +91,33 @@ export default function ClientReport() {
         ? moment(data.audit.audit_date).format('DD MMM YYYY') : '';
 
       // ── Build page-start positions (canvas px) ────────────────────────────
-      // Rule: every section forces a new page; overflow sections are subdivided.
-      const sectionBreaksPx = sectionTopsCssPx.map(t =>
-        Math.round(t * (canvas.width / 794))
+      // Advance a cursor by the correct slot size each page.
+      // Forced section breaks only fire if they fall WITHIN the current slot,
+      // so each page's content never overlaps the previous one.
+      const forcedBreaksPx = new Set(
+        sectionTopsCssPx
+          .map(t => Math.round(t * (canvas.width / 794)))
+          .filter(b => b > 10)
       );
-      const rawBreaks = [...new Set([0, ...sectionBreaksPx.filter(b => b > 10)])]
-        .sort((a, b) => a - b);
 
       const pageStartsPx = [];
-      let pageIdx = 0;
+      let pos = 0;
 
-      for (let si = 0; si < rawBreaks.length; si++) {
-        const segStart = rawBreaks[si];
-        const segEnd   = si + 1 < rawBreaks.length ? rawBreaks[si + 1] : canvas.height;
+      while (pos < canvas.height) {
+        pageStartsPx.push(pos);
+        const pi = pageStartsPx.length - 1;
+        const slotPx = (pi === 0 ? PAGE1_SLOT : PAGE_SLOT) * pxPerMm;
+        const nextPos = pos + slotPx;
 
-        pageStartsPx.push(segStart);
-        const slotPx = (pageIdx === 0 ? PAGE1_SLOT : PAGE_SLOT) * pxPerMm;
-        pageIdx++;
-
-        // Subdivide if section content is taller than one page slot
-        let cursor = segStart + slotPx;
-        while (cursor < segEnd - 5) {
-          pageStartsPx.push(Math.round(cursor));
-          pageIdx++;
-          cursor += PAGE_SLOT * pxPerMm;
+        // Find earliest forced break that falls inside this slot (not right at pos)
+        let nextBreak = null;
+        for (const b of forcedBreaksPx) {
+          if (b > pos + 10 && b < nextPos) {
+            if (nextBreak === null || b < nextBreak) nextBreak = b;
+          }
         }
+
+        pos = nextBreak !== null ? nextBreak : Math.round(nextPos);
       }
 
       const totalPages = pageStartsPx.length;
