@@ -32,10 +32,11 @@ export default function ReportHotWater({ hotWaters, zoneMap }) {
                   <FieldRow label="Tempering Valve Installed" value={hw.tempering_valve} />
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
-                <PhotoBox url={hw.photo} label="DHW System" />
-                <PhotoBox url={null} label="Label / Serial plate" />
-              </div>
+              {hw.photo && (
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px', pageBreakInside: 'avoid' }}>
+                  <PhotoBox url={hw.photo} label="DHW System" />
+                </div>
+              )}
             </div>
           ))}
         </div>

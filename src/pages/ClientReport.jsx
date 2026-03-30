@@ -206,17 +206,11 @@ export function FieldRow({ label, value }) {
 }
 
 export function PhotoBox({ url, label }) {
-  if (url) {
-    return (
-      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', maxWidth: '45%' }}>
-        <img src={url} alt={label || 'Photo'} style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block', border: 'none' }} />
-        {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
-      </div>
-    );
-  }
+  if (!url) return null;
   return (
-    <div style={{ borderRadius: '8px', border: '2px dashed #DDDDDD', height: '160px', maxWidth: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontSize: '9pt', color: '#aaa', textAlign: 'center', padding: '8px' }}>📷 {label || 'Photo placeholder'}</p>
+    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '280px' }}>
+      <img src={url} alt={label || 'Photo'} style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block', border: 'none' }} />
+      {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
     </div>
   );
 }

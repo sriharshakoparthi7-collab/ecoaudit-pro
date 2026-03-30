@@ -24,13 +24,14 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Sub-Circuits & Ratings" value={msb.sub_circuits_description} />
               <FieldRow label="Zone" value={zoneMap[msb.zone_id]} />
               <FieldRow label="Auditor Comments" value={msb.comments} />
-              <div className="mt-4">
-                <p style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px' }}>Photographic Evidence</p>
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                  <PhotoBox url={msb.photo || null} label="Main Switchboard" />
-                  <PhotoBox url={null} label="Additional photo" />
+              {msb.photo && (
+                <div style={{ marginTop: '12px' }}>
+                  <p style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px' }}>Photographic Evidence</p>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <PhotoBox url={msb.photo} label="Main Switchboard" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))
         )}
@@ -49,31 +50,40 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
           <>
             <div className="overflow-x-auto rounded-lg border border-gray-100 mb-4">
               <table className="w-full text-xs">
+                <colgroup>
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '40%' }} />
+                    <col style={{ width: '15%' }} />
+                  </colgroup>
                 <thead style={{ background: '#e8f0ef' }}>
                   <tr>
                     {['Board Name', 'Location / GPS', 'Type', 'Sub-Circuit Details', 'Zone'].map(h => (
-                      <th key={h} className="px-3 py-2.5 text-left font-semibold uppercase tracking-wide" style={{ color: '#1B4040' }}>{h}</th>
+                      <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: '10pt', fontWeight: 700, color: '#2C3E50', textTransform: 'uppercase', letterSpacing: '0.03em', wordBreak: 'break-word', whiteSpace: 'normal' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {additionals.map((sb, i) => (
-                    <tr key={sb.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-3 py-2 font-medium">{sb.name || '—'}</td>
-                      <td className="px-3 py-2">{[sb.location, sb.map_locator].filter(Boolean).join(' / ') || '—'}</td>
-                      <td className="px-3 py-2">{sb.type || '—'}</td>
-                      <td className="px-3 py-2">{sb.sub_circuits_description || '—'}</td>
-                      <td className="px-3 py-2">{zoneMap[sb.zone_id] || '—'}</td>
+                    <tr key={sb.id} style={{ background: i % 2 === 0 ? '#ffffff' : '#f9f9f9' }}>
+                      <td style={{ padding: '7px 10px', fontSize: '10pt', fontWeight: 500, wordBreak: 'break-word', whiteSpace: 'normal' }}>{sb.name || '—'}</td>
+                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{[sb.location, sb.map_locator].filter(Boolean).join(' / ') || '—'}</td>
+                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{sb.type || '—'}</td>
+                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{sb.sub_circuits_description || '—'}</td>
+                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{zoneMap[sb.zone_id] || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              {additionals.slice(0, 2).map(sb => (
-                <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
-              ))}
-            </div>
+            {additionals.some(sb => sb.photo) && (
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
+                {additionals.filter(sb => sb.photo).slice(0, 2).map(sb => (
+                  <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

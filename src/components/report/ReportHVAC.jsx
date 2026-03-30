@@ -42,10 +42,12 @@ export default function ReportHVAC({ hvacs, zoneMap }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
-                <PhotoBox url={unit.photo} label="HVAC Unit" />
-                <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
-              </div>
+              {(unit.photo || unit.nameplate_photos) && (
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px', pageBreakInside: 'avoid' }}>
+                  <PhotoBox url={unit.photo} label="HVAC Unit" />
+                  <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
+                </div>
+              )}
             </div>
           ))}
         </div>
