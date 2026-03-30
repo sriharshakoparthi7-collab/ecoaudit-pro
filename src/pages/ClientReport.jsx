@@ -61,7 +61,19 @@ export default function ClientReport() {
       };
       const sectionTopsCssPx = sectionEls.map(s => getOffsetTop(s, el));
 
-      // Restore styles & scroll
+      // Capture full canvas BEFORE restoring styles
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f7f8f8',
+        logging: false,
+        width: 794,
+        height: el.scrollHeight,
+        windowWidth: 794,
+      });
+
+      // Restore styles after capture
       Object.assign(el.style, saved);
 
       // ── PDF layout constants ──────────────────────────────────────────────
