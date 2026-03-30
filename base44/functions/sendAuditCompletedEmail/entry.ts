@@ -4,6 +4,7 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const bodyData = await req.json();
+    // Support entity automation payload (event.entity_id) and direct call (audit_id)
     const audit_id = bodyData.audit_id || (bodyData.event && bodyData.event.entity_id) || (bodyData.data && bodyData.data.id);
 
     if (!audit_id) {
@@ -60,28 +61,14 @@ Deno.serve(async (req) => {
   </div>
 </div>`.trim();
 
-    const resendKey = Deno.env.get('RESEND_API_KEY');
-    const resRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Sustainability Wise Audits <onboarding@resend.dev>',
-        to: ['service@sustainabilitywise.com.au'],
-        subject: `Audit Completed: ${audit.site_name} — ${auditDate}`,
-        html: emailBody,
-      }),
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to: 'service@sustainabilitywise.com.au',
+      from_name: 'Sustainability Wise Audits',
+      subject: `Audit Completed: ${audit.site_name} — ${auditDate}`,
+      body: emailBody,
     });
 
-    const resData = await resRes.json();
-    if (!resRes.ok) {
-      console.error('Resend error:', JSON.stringify(resData));
-      return Response.json({ error: resData }, { status: 500 });
-    }
-
-    return Response.json({ success: true, email_id: resData.id });
+    return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
