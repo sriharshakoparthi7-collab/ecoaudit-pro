@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Plus, Save, Loader2, CheckCircle, FileText, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import ZoneCard from '../components/ZoneCard';
+import PullToRefresh from '../components/PullToRefresh';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export default function SiteAudit() {
   const { auditId } = useParams();
@@ -24,6 +26,7 @@ export default function SiteAudit() {
   const [saving, setSaving] = useState(false);
   const [zoneDialog, setZoneDialog] = useState(false);
   const [newZone, setNewZone] = useState({ zone_name: '', zone_description: '' });
+  const [deleteAuditDialog, setDeleteAuditDialog] = useState(false);
 
   useEffect(() => {
     if (!isNew) loadData();
@@ -85,14 +88,21 @@ export default function SiteAudit() {
   };
 
   const handleDeleteAudit = async () => {
-    if (!confirm('Delete this audit and all its data?')) return;
-    // Delete all zones
     for (const z of zones) {
       await base44.entities.Zone.delete(z.id);
     }
     await base44.entities.Audit.delete(auditId);
     toast.success('Audit deleted');
     navigate('/', { replace: true });
+  };
+
+  const handleRefresh = async () => {
+    const [auditData, zonesData] = await Promise.all([
+      base44.entities.Audit.filter({ id: auditId }),
+      base44.entities.Zone.filter({ audit_id: auditId }),
+    ]);
+    if (auditData.length) setAudit(auditData[0]);
+    setZones(zonesData);
   };
 
   if (loading) {
@@ -106,6 +116,7 @@ export default function SiteAudit() {
   const set = (key, val) => setAudit({ ...audit, [key]: val });
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -195,7 +206,7 @@ export default function SiteAudit() {
 
           {/* Delete Audit */}
           <div className="pt-4 border-t border-border">
-            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={handleDeleteAudit}>
+            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive min-h-[44px]" onClick={() => setDeleteAuditDialog(true)}>
               <Trash2 className="w-3.5 h-3.5 mr-1.5" />
               Delete Audit
             </Button>
@@ -225,6 +236,23 @@ export default function SiteAudit() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Audit Confirmation */}
+      <AlertDialog open={deleteAuditDialog} onOpenChange={setDeleteAuditDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Audit?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this audit and all its zones and equipment data. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteAudit}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+    </PullToRefresh>
   );
 }

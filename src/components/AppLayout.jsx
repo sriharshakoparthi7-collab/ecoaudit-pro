@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { LayoutDashboard, Leaf, Settings, Home } from 'lucide-react';
@@ -7,6 +8,11 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isOnHome = location.pathname === '/';
+  // Remember last non-settings path so Home tab restores it
+  const lastMainPath = useRef('/');
+  if (location.pathname !== '/settings') {
+    lastMainPath.current = location.pathname;
+  }
   return (
     <div className="min-h-screen bg-background" style={{ overscrollBehavior: 'none' }}>
       {/* Top Header */}
@@ -70,12 +76,13 @@ export default function AppLayout() {
           { path: '/', icon: Home, label: 'Home' },
           { path: '/settings', icon: Settings, label: 'Settings' },
         ].map(({ path, icon: Icon, label }) => {
-          const active = location.pathname === path;
+          const active = path === '/settings' ? location.pathname === '/settings' : location.pathname !== '/settings';
+          const dest = path === '/' ? lastMainPath.current : path;
           return (
             <Link
               key={path}
-              to={path}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 select-none transition-colors ${
+              to={dest}
+              className={`flex-1 flex flex-col items-center gap-1 py-3 min-h-[56px] select-none transition-colors ${
                 active ? 'text-primary' : 'text-muted-foreground'
               }`}
             >

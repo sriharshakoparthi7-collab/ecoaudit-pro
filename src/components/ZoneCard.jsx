@@ -25,7 +25,7 @@ export default function ZoneCard({ zone, auditId, onDelete }) {
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 text-xs text-muted-foreground hover:text-destructive"
+          className="min-h-[44px] min-w-[44px] text-xs text-muted-foreground hover:text-destructive"
           onClick={(e) => {
             e.preventDefault();
             onDelete(zone.id);

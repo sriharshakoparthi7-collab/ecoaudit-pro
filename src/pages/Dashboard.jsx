@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Plus, Leaf, Search, ClipboardList } from 'lucide-react';
+import PullToRefresh from '../components/PullToRefresh';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AuditCard from '../components/AuditCard';
@@ -21,6 +22,11 @@ export default function Dashboard() {
     setLoading(false);
   };
 
+  const handleRefresh = async () => {
+    const data = await base44.entities.Audit.list('-created_date');
+    setAudits(data);
+  };
+
   const filtered = audits.filter(a =>
     a.site_name?.toLowerCase().includes(search.toLowerCase()) ||
     a.inspector_name?.toLowerCase().includes(search.toLowerCase())
@@ -35,6 +41,7 @@ export default function Dashboard() {
   }
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="space-y-6">
       {/* Hero */}
       <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-2xl p-6 border border-primary/10">
@@ -86,5 +93,6 @@ export default function Dashboard() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }
