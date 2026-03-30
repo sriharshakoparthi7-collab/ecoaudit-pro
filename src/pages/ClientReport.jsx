@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Download, Loader2 } from 'lucide-react';
 import moment from 'moment';
 import ReportHeader from '../components/report/ReportHeader';
 import ReportElectrical from '../components/report/ReportElectrical';
@@ -15,12 +15,42 @@ import ReportObservations from '../components/report/ReportObservations';
 export default function ClientReport() {
   const { auditId } = useParams();
   const navigate = useNavigate();
+  const reportRef = useRef(null);
+  const [exporting, setExporting] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadAll();
   }, [auditId]);
+
+  const exportPDF = async () => {
+    setExporting(true);
+    const { default: jsPDF } = await import('jspdf');
+    const { default: html2canvas } = await import('html2canvas');
+    const el = reportRef.current;
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#f4f6f5',
+      logging: false,
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const imgH = (canvas.height * pdfW) / canvas.width;
+    let y = 0;
+    while (y < imgH) {
+      pdf.addImage(imgData, 'JPEG', 0, -y, pdfW, imgH);
+      y += pdfH;
+      if (y < imgH) pdf.addPage();
+    }
+    const siteName = data?.audit?.site_name || 'Energy-Audit';
+    pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
+    setExporting(false);
+  };
 
   const loadAll = async () => {
     const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters] = await Promise.all([
@@ -34,21 +64,9 @@ export default function ClientReport() {
       base44.entities.ForkliftCharger.filter({ audit_id: auditId }),
       base44.entities.HotWaterSystem.filter({ audit_id: auditId }),
     ]);
-
     const zoneMap = {};
     zones.forEach(z => { zoneMap[z.id] = z.zone_name; });
-
-    setData({
-      audit: audits[0] || {},
-      zoneMap,
-      mains,
-      additionals,
-      hvacs,
-      lights,
-      solars,
-      forklifts,
-      hotWaters,
-    });
+    setData({ audit: audits[0] || {}, zoneMap, mains, additionals, hvacs, lights, solars, forklifts, hotWaters });
     setLoading(false);
   };
 
@@ -97,16 +115,18 @@ export default function ClientReport() {
           Back to Report
         </button>
         <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-teal hover:opacity-90 transition-opacity"
+          onClick={exportPDF}
+          disabled={exporting}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60"
+          style={{ background: '#1B4040' }}
         >
-          <Printer className="w-4 h-4" />
-          Print / Save PDF
+          {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+          {exporting ? 'Generating PDF...' : 'Export PDF'}
         </button>
       </div>
 
       {/* Report Document */}
-      <div className="report-body rounded-2xl overflow-hidden shadow-xl report-page" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
         <div className="px-10 py-8 space-y-12" style={{ background: '#f4f6f5' }}>
