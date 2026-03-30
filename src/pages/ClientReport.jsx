@@ -132,14 +132,9 @@ export default function ClientReport() {
         const slotPx       = slotMm * pxPerMm;
         const contentTopMm = isFirstPage ? 0 : HEADER_H;
 
-        // Slice up to the next page's start (handles early forced section breaks),
-        // or slotPx (normal pages), or remaining canvas height (last page).
-        const nextStartPx = pi + 1 < totalPages ? pageStartsPx[pi + 1] : canvas.height;
-        const sliceH = Math.min(
-          Math.ceil(slotPx),
-          nextStartPx - startPx,
-          canvas.height - startPx
-        );
+        // Slice EXACTLY slotPx canvas rows (or remaining rows for last page).
+        // This avoids any scaling/compression of content.
+        const sliceH = Math.min(Math.ceil(slotPx), canvas.height - startPx);
 
         if (sliceH > 0) {
           const sc = document.createElement('canvas');
