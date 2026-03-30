@@ -65,20 +65,23 @@ export default function SiteAudit() {
 
   const handleAddZone = async () => {
     if (!newZone.zone_name) return;
-    const created = await base44.entities.Zone.create({
-      ...newZone,
-      audit_id: auditId,
-    });
-    setZones([...zones, created]);
+    // Optimistic: add placeholder immediately
+    const tempId = `temp-${Date.now()}`;
+    const optimistic = { ...newZone, id: tempId, audit_id: auditId };
+    setZones(prev => [...prev, optimistic]);
     setNewZone({ zone_name: '', zone_description: '' });
     setZoneDialog(false);
+    const created = await base44.entities.Zone.create({ ...newZone, audit_id: auditId });
+    // Replace temp with real
+    setZones(prev => prev.map(z => z.id === tempId ? created : z));
     toast.success('Zone added');
   };
 
   const handleDeleteZone = async (zoneId) => {
-    await base44.entities.Zone.delete(zoneId);
-    setZones(zones.filter(z => z.id !== zoneId));
+    // Optimistic remove
+    setZones(prev => prev.filter(z => z.id !== zoneId));
     toast.success('Zone removed');
+    await base44.entities.Zone.delete(zoneId);
   };
 
   const handleDeleteAudit = async () => {

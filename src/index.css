@@ -84,5 +84,11 @@
   }
   body {
     @apply bg-background text-foreground font-inter;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, [role='button'], [role='tab'] {
+    -webkit-user-select: none;
+    user-select: none;
   }
 }

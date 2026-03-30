@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import PhotoUpload from './PhotoUpload';
+import MobileSelect from './MobileSelect';
 
 function Field({ label, children }) {
   return (
@@ -35,15 +35,13 @@ export function AdditionalSwitchboardFields({ data, onChange }) {
       <Field label="Location"><Input value={data.location || ''} onChange={e => set('location', e.target.value)} /></Field>
       <Field label="Map Locator"><Input value={data.map_locator || ''} onChange={e => set('map_locator', e.target.value)} /></Field>
       <Field label="Type">
-        <Select value={data.type || ''} onValueChange={v => set('type', v)}>
-          <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Distribution Board">Distribution Board</SelectItem>
-            <SelectItem value="Sub-Main">Sub-Main</SelectItem>
-            <SelectItem value="Motor Control Centre">Motor Control Centre</SelectItem>
-            <SelectItem value="Other">Other</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.type || ''} onValueChange={v => set('type', v)} placeholder="Select type"
+          options={[
+            { value: 'Distribution Board', label: 'Distribution Board' },
+            { value: 'Sub-Main', label: 'Sub-Main' },
+            { value: 'Motor Control Centre', label: 'Motor Control Centre' },
+            { value: 'Other', label: 'Other' },
+          ]} />
       </Field>
       <PhotoUpload value={data.photo || ''} onChange={v => set('photo', v)} />
       <Field label="Sub-Circuits Description"><Textarea value={data.sub_circuits_description || ''} onChange={e => set('sub_circuits_description', e.target.value)} rows={3} /></Field>
@@ -60,13 +58,8 @@ export function HVACFields({ data, onChange }) {
       <PhotoUpload value={data.photo || ''} onChange={v => set('photo', v)} />
       <Field label="Location"><Input value={data.location || ''} onChange={e => set('location', e.target.value)} /></Field>
       <Field label="Type">
-        <Select value={data.type || ''} onValueChange={v => set('type', v)}>
-          <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Packaged">Packaged</SelectItem>
-            <SelectItem value="Split">Split</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.type || ''} onValueChange={v => set('type', v)} placeholder="Select type"
+          options={[{ value: 'Packaged', label: 'Packaged' }, { value: 'Split', label: 'Split' }]} />
       </Field>
       <Field label="Model"><Input value={data.model || ''} onChange={e => set('model', e.target.value)} /></Field>
       <Field label="Serial Number"><Input value={data.serial_number || ''} onChange={e => set('serial_number', e.target.value)} /></Field>
@@ -110,22 +103,12 @@ export function SolarPVFields({ data, onChange }) {
       <Field label="Inverter Brand/Model"><Input value={data.inverter_brand_model || ''} onChange={e => set('inverter_brand_model', e.target.value)} /></Field>
       <Field label="Inverter Location"><Input value={data.inverter_location || ''} onChange={e => set('inverter_location', e.target.value)} /></Field>
       <Field label="Available Roof Space">
-        <Select value={data.available_roof_space || ''} onValueChange={v => set('available_roof_space', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.available_roof_space || ''} onValueChange={v => set('available_roof_space', v)} placeholder="Select"
+          options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
       </Field>
       <Field label="Suitable Switchboard">
-        <Select value={data.suitable_switchboard || ''} onValueChange={v => set('suitable_switchboard', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.suitable_switchboard || ''} onValueChange={v => set('suitable_switchboard', v)} placeholder="Select"
+          options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
       </Field>
       <Field label="Cable Route Description"><Textarea value={data.cable_route_description || ''} onChange={e => set('cable_route_description', e.target.value)} rows={3} /></Field>
     </div>
@@ -143,22 +126,12 @@ export function ForkliftChargerFields({ data, onChange }) {
       <Field label="Location"><Input value={data.location || ''} onChange={e => set('location', e.target.value)} /></Field>
       <Field label="Quantity"><Input type="number" value={data.quantity || ''} onChange={e => set('quantity', parseInt(e.target.value) || '')} /></Field>
       <Field label="Hardwired/Socket">
-        <Select value={data.hardwired_socket || ''} onValueChange={v => set('hardwired_socket', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Hardwired">Hardwired</SelectItem>
-            <SelectItem value="Socket">Socket</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.hardwired_socket || ''} onValueChange={v => set('hardwired_socket', v)} placeholder="Select"
+          options={[{ value: 'Hardwired', label: 'Hardwired' }, { value: 'Socket', label: 'Socket' }]} />
       </Field>
       <Field label="Scheduling Opportunity">
-        <Select value={data.scheduling_opportunity || ''} onValueChange={v => set('scheduling_opportunity', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.scheduling_opportunity || ''} onValueChange={v => set('scheduling_opportunity', v)} placeholder="Select"
+          options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
       </Field>
     </div>
   );
@@ -175,22 +148,12 @@ export function HotWaterFields({ data, onChange }) {
       <Field label="Fuel Type"><Input value={data.fuel_type || ''} onChange={e => set('fuel_type', e.target.value)} /></Field>
       <Field label="Location"><Input value={data.location || ''} onChange={e => set('location', e.target.value)} /></Field>
       <Field label="Pipe Insulation">
-        <Select value={data.pipe_insulation || ''} onValueChange={v => set('pipe_insulation', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.pipe_insulation || ''} onValueChange={v => set('pipe_insulation', v)} placeholder="Select"
+          options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
       </Field>
       <Field label="Tempering Valve">
-        <Select value={data.tempering_valve || ''} onValueChange={v => set('tempering_valve', v)}>
-          <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
+        <MobileSelect value={data.tempering_valve || ''} onValueChange={v => set('tempering_valve', v)} placeholder="Select"
+          options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
       </Field>
     </div>
   );

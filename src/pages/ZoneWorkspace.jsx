@@ -61,17 +61,28 @@ export default function ZoneWorkspace() {
     const entityName = ENTITY_MAP[formType];
     if (editItem?.id) {
       const { id, created_date, updated_date, created_by, ...updateData } = data;
-      await base44.entities[entityName].update(editItem.id, updateData);
+      // Optimistic update
+      setEquipment(prev => ({
+        ...prev,
+        [formType]: prev[formType].map(i => i.id === editItem.id ? { ...i, ...updateData } : i),
+      }));
       toast.success('Equipment updated');
+      await base44.entities[entityName].update(editItem.id, updateData);
     } else {
-      await base44.entities[entityName].create({
-        ...data,
-        zone_id: zoneId,
-        audit_id: auditId,
-      });
+      const tempId = `temp-${Date.now()}`;
+      const optimistic = { ...data, id: tempId, zone_id: zoneId, audit_id: auditId };
+      // Optimistic add
+      setEquipment(prev => ({
+        ...prev,
+        [formType]: [...(prev[formType] || []), optimistic],
+      }));
       toast.success('Equipment added');
+      const created = await base44.entities[entityName].create({ ...data, zone_id: zoneId, audit_id: auditId });
+      setEquipment(prev => ({
+        ...prev,
+        [formType]: prev[formType].map(i => i.id === tempId ? created : i),
+      }));
     }
-    await loadData();
   };
 
   const handleDelete = async (type, itemId) => {
