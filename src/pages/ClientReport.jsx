@@ -94,11 +94,14 @@ export default function ClientReport() {
         .report-body img { max-width: 100%; border: 1px solid #DDDDDD; border-radius: 6px; }
         .avoid-break { page-break-inside: avoid; break-inside: avoid; }
         .page-break { page-break-before: always; break-before: always; }
+        .keep-with-next { page-break-after: avoid; break-after: avoid; }
+        .section-block { page-break-inside: avoid; break-inside: avoid; }
         @media print {
           .no-print { display: none !important; }
           nav, header, aside { display: none !important; }
           body { background: white !important; margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          @page { margin: 2.54cm; size: A4; }
+          @page { margin: 1.8cm; size: A4; }
+          .report-page-border { box-shadow: inset 0 0 0 2px #2C3E50 !important; }
         }
       `}</style>
 
@@ -123,7 +126,7 @@ export default function ClientReport() {
       </div>
 
       {/* Report Document */}
-      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-12px' }} style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
         <div className="report-content space-y-12" style={{ background: '#f7f8f8' }}>
@@ -174,13 +177,13 @@ export default function ClientReport() {
 export function SectionTitle({ number, title, plain }) {
   if (plain) {
     return (
-      <h2 style={{ fontSize: '18pt', fontWeight: 800, color: '#2C3E50', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>
+      <h2 className="keep-with-next" style={{ fontSize: '18pt', fontWeight: 800, color: '#2C3E50', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
         {number}
       </h2>
     );
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #1B4040' }}>
+    <div className="keep-with-next" style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #1B4040', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
       <span style={{ fontSize: '20pt', fontWeight: 800, color: '#1B4040' }}>{number}.</span>
       <h2 style={{ fontSize: '18pt', fontWeight: 700, color: '#2C3E50', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>{title}</h2>
     </div>
@@ -217,7 +220,7 @@ export function PhotoBox({ url, label }) {
 
 export function SubSectionTitle({ title }) {
   return (
-    <h3 style={{ fontSize: '13pt', fontWeight: 600, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', paddingBottom: '4px', borderBottom: '1px solid #DDDDDD' }}>
+    <h3 className="keep-with-next" style={{ fontSize: '13pt', fontWeight: 600, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', paddingBottom: '4px', borderBottom: '1px solid #DDDDDD', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
       {title}
     </h3>
   );
