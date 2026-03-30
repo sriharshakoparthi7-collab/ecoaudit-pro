@@ -16,8 +16,9 @@ export default function PullToRefresh({ onRefresh, children }) {
   const onTouchMove = (e) => {
     if (startY.current === null || refreshing) return;
     const delta = e.touches[0].clientY - startY.current;
-    if (delta > 0) {
-      e.preventDefault();
+    if (delta > 10) {
+      // Only prevent default once we're clearly in a downward pull
+      if (e.cancelable) e.preventDefault();
       setPullDistance(Math.min(delta * 0.5, THRESHOLD + 20));
     }
   };
