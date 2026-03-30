@@ -44,37 +44,25 @@ export default function ClientReport() {
       };
       el.style.width = '794px';
       el.style.maxWidth = '794px';
-      el.style.overflow = 'visible';
+      el.style.overflow = 'visible'; // critical: allows full scrollHeight to be captured
       el.style.borderRadius = '0';
       await new Promise(r => setTimeout(r, 600));
 
-      // Scroll to top so getBoundingClientRect is accurate
-      const prevScrollY = window.scrollY;
-      window.scrollTo(0, 0);
-      await new Promise(r => setTimeout(r, 80));
-
-      // Measure section positions relative to el (viewport-accurate)
-      const elRect = el.getBoundingClientRect();
+      // Measure section positions using offsetTop traversal (scroll-independent)
       const sectionEls = Array.from(el.querySelectorAll('[data-pdf-section]'));
-      const sectionTopsCssPx = sectionEls.map(s =>
-        Math.max(0, s.getBoundingClientRect().top - elRect.top)
-      );
-
-      // Capture full-height canvas at 2× scale
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#f7f8f8',
-        logging: false,
-        width: 794,
-        height: el.scrollHeight,
-        windowWidth: 794,
-      });
+      const getOffsetTop = (child, ancestor) => {
+        let offset = 0;
+        let cur = child;
+        while (cur && cur !== ancestor) {
+          offset += cur.offsetTop;
+          cur = cur.offsetParent;
+        }
+        return offset;
+      };
+      const sectionTopsCssPx = sectionEls.map(s => getOffsetTop(s, el));
 
       // Restore styles & scroll
       Object.assign(el.style, saved);
-      window.scrollTo(0, prevScrollY);
 
       // ── PDF layout constants ──────────────────────────────────────────────
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
@@ -260,7 +248,7 @@ export default function ClientReport() {
       </div>
 
       {/* Report Document */}
-      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-10px' }}>
+      <div ref={reportRef} className="report-body rounded-2xl shadow-xl" style={{ overflow: 'hidden', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-10px' }}>
         <ReportHeader audit={audit} />
 
         <div className="report-content space-y-8" style={{ background: '#f7f8f8' }}>
