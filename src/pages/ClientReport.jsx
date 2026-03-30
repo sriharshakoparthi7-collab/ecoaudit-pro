@@ -83,26 +83,23 @@ export default function ClientReport() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+        .report-body, .report-body * { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif !important; }
+        .report-body { background: #f7f8f8; }
+        .report-content { padding: 2.54cm; }
+        .report-body p, .report-body td, .report-body li { font-size: 11pt; color: #333333; line-height: 1.6; }
+        .report-body table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+        .report-body td, .report-body th { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; padding: 7px 10px; font-size: 10pt; }
+        .report-body th { font-size: 10pt; font-weight: 700; background: #f4f4f4 !important; color: #2C3E50; }
+        .report-body img { max-width: 100%; border: 1px solid #DDDDDD; border-radius: 6px; }
+        .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+        .page-break { page-break-before: always; break-before: always; }
         @media print {
           .no-print { display: none !important; }
-          nav, header, aside, [data-sidebar] { display: none !important; }
+          nav, header, aside { display: none !important; }
           body { background: white !important; margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .report-page { padding: 0 !important; margin: 0 !important; }
-          .page-break { page-break-before: always; }
-          .avoid-break { page-break-inside: avoid; }
-          @page { margin: 10mm; size: A4; }
+          @page { margin: 2.54cm; size: A4; }
         }
-        .report-body { background: #f4f6f5; }
-        .teal { color: #1B4040; }
-        .bg-teal { background-color: #1B4040; }
-        .border-teal { border-color: #1B4040; }
-        .bg-teal-light { background-color: #e8f0ef; }
-        .decorative-lines {
-          position: absolute;
-          pointer-events: none;
-          overflow: hidden;
-        }
-        .decorative-lines svg { opacity: 0.08; }
       `}</style>
 
       {/* Toolbar */}
@@ -129,7 +126,7 @@ export default function ClientReport() {
       <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
         <ReportHeader audit={audit} />
 
-        <div className="px-10 py-8 space-y-12" style={{ background: '#f4f6f5' }}>
+        <div className="report-content space-y-12" style={{ background: '#f7f8f8' }}>
           {/* Executive Summary */}
           <section className="avoid-break">
             <SectionTitle number="Executive Summary" plain />
@@ -177,33 +174,33 @@ export default function ClientReport() {
 export function SectionTitle({ number, title, plain }) {
   if (plain) {
     return (
-      <h2 className="text-lg font-bold uppercase tracking-widest mb-4" style={{ color: '#1B4040' }}>
+      <h2 style={{ fontSize: '18pt', fontWeight: 800, color: '#2C3E50', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px' }}>
         {number}
       </h2>
     );
   }
   return (
-    <div className="flex items-baseline gap-3 mb-5">
-      <span className="text-2xl font-black" style={{ color: '#1B4040' }}>{number}.</span>
-      <h2 className="text-lg font-bold uppercase tracking-widest" style={{ color: '#1B4040' }}>{title}</h2>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #1B4040' }}>
+      <span style={{ fontSize: '20pt', fontWeight: 800, color: '#1B4040' }}>{number}.</span>
+      <h2 style={{ fontSize: '18pt', fontWeight: 700, color: '#2C3E50', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>{title}</h2>
     </div>
   );
 }
 
 export function InfoBox({ label, value }) {
   return (
-    <div className="rounded-lg p-3" style={{ background: '#e8f0ef' }}>
-      <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#1B4040' }}>{label}</p>
-      <p className="text-sm font-medium" style={{ color: '#2c4a4a' }}>{value || '—'}</p>
+    <div style={{ borderRadius: '8px', padding: '12px', background: '#EAF0EF' }}>
+      <p style={{ fontSize: '9pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px', color: '#1B4040' }}>{label}</p>
+      <p style={{ fontSize: '11pt', fontWeight: 600, color: '#2C3E50' }}>{value || '—'}</p>
     </div>
   );
 }
 
 export function FieldRow({ label, value }) {
   return (
-    <div className="flex gap-2 py-2 border-b border-gray-100 last:border-0">
-      <span className="text-xs font-semibold w-48 flex-shrink-0" style={{ color: '#1B4040' }}>{label}</span>
-      <span className="text-xs text-gray-700">{value || '—'}</span>
+    <div style={{ display: 'flex', gap: '8px', padding: '6px 0', borderBottom: '1px solid #F0F0F0' }}>
+      <span style={{ fontSize: '10pt', fontWeight: 600, width: '180px', flexShrink: 0, color: '#2C3E50' }}>{label}</span>
+      <span style={{ fontSize: '10pt', color: '#333333', wordBreak: 'break-word', flex: 1 }}>{value ?? '—'}</span>
     </div>
   );
 }
@@ -211,22 +208,22 @@ export function FieldRow({ label, value }) {
 export function PhotoBox({ url, label }) {
   if (url) {
     return (
-      <div className="rounded-lg overflow-hidden border border-gray-200">
-        <img src={url} alt={label || 'Photo'} className="w-full h-40 object-cover" />
-        {label && <p className="text-xs text-center py-1 text-gray-500">{label}</p>}
+      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', maxWidth: '45%' }}>
+        <img src={url} alt={label || 'Photo'} style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block', border: 'none' }} />
+        {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
       </div>
     );
   }
   return (
-    <div className="rounded-lg border-2 border-dashed border-gray-200 h-40 flex items-center justify-center">
-      <p className="text-xs text-gray-400 text-center px-4">📷 {label || 'Photo placeholder'}</p>
+    <div style={{ borderRadius: '8px', border: '2px dashed #DDDDDD', height: '160px', maxWidth: '45%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontSize: '9pt', color: '#aaa', textAlign: 'center', padding: '8px' }}>📷 {label || 'Photo placeholder'}</p>
     </div>
   );
 }
 
 export function SubSectionTitle({ title }) {
   return (
-    <h3 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: '#1B4040', borderColor: '#1B4040' }}>
+    <h3 style={{ fontSize: '13pt', fontWeight: 600, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', paddingBottom: '4px', borderBottom: '1px solid #DDDDDD' }}>
       {title}
     </h3>
   );

@@ -24,24 +24,13 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Sub-Circuits & Ratings" value={msb.sub_circuits_description} />
               <FieldRow label="Zone" value={zoneMap[msb.zone_id]} />
               <FieldRow label="Auditor Comments" value={msb.comments} />
-              {msb.photo && (
-                <div className="mt-4">
-                  <p className="text-xs font-semibold mb-2" style={{ color: '#1B4040' }}>Photographic Evidence</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <PhotoBox url={msb.photo} label="Main Switchboard" />
-                    <PhotoBox url={null} label="Additional photo placeholder" />
-                  </div>
+              <div className="mt-4">
+                <p style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px' }}>Photographic Evidence</p>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <PhotoBox url={msb.photo || null} label="Main Switchboard" />
+                  <PhotoBox url={null} label="Additional photo" />
                 </div>
-              )}
-              {!msb.photo && (
-                <div className="mt-4">
-                  <p className="text-xs font-semibold mb-2" style={{ color: '#1B4040' }}>Photographic Evidence</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <PhotoBox url={null} label="Main Switchboard photo" />
-                    <PhotoBox url={null} label="Additional photo" />
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           ))
         )}
@@ -80,8 +69,8 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
                 </tbody>
               </table>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {additionals.slice(0, 3).map(sb => (
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              {additionals.slice(0, 2).map(sb => (
                 <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
               ))}
             </div>

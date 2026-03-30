@@ -43,10 +43,9 @@ export default function ReportLighting({ lights, zoneMap }) {
               </div>
 
               {light.photo && (
-                <div className="mt-4 grid grid-cols-3 gap-3">
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
                   <PhotoBox url={light.photo} label="Fixture label" />
                   <PhotoBox url={null} label="Installed fixture" />
-                  <PhotoBox url={null} label="Control switch" />
                 </div>
               )}
             </div>

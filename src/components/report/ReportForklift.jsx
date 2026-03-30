@@ -33,10 +33,9 @@ export default function ReportForklift({ forklifts, zoneMap }) {
                   <FieldRow label="Scheduling Opportunity" value={fc.scheduling_opportunity} />
                 </div>
               </div>
-              <div className="mt-5 grid grid-cols-3 gap-3">
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
                 <PhotoBox url={null} label="Charger unit" />
                 <PhotoBox url={null} label="Charger label" />
-                <PhotoBox url={null} label="Local isolator" />
               </div>
             </div>
           ))}

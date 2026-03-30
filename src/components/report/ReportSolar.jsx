@@ -33,10 +33,9 @@ export default function ReportSolar({ solars, zoneMap }) {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-3">
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
                 <PhotoBox url={pv.roof_photo} label="Roof / Panels" />
                 <PhotoBox url={null} label="Inverter" />
-                <PhotoBox url={null} label="Available roof space" />
               </div>
             </div>
           ))}
