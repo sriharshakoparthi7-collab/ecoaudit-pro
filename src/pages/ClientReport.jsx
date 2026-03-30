@@ -26,142 +26,164 @@ export default function ClientReport() {
 
   const exportPDF = async () => {
     setExporting(true);
-    const { default: jsPDF } = await import('jspdf');
-    const { default: html2canvas } = await import('html2canvas');
-    const el = reportRef.current;
+    try {
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
 
-    // Force A4 width before capture
-    const prevWidth = el.style.width;
-    const prevMaxWidth = el.style.maxWidth;
-    el.style.width = '794px';
-    el.style.maxWidth = '794px';
-    await new Promise(r => setTimeout(r, 400));
+      // Wait for web fonts to load
+      await document.fonts.ready;
 
-    // Record section break positions BEFORE capturing
-    const sectionEls = Array.from(el.querySelectorAll('[data-pdf-section]'));
-    const sectionTopsCss = sectionEls.map(s => s.offsetTop); // CSS px from el top
+      const el = reportRef.current;
 
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#f7f8f8',
-      logging: false,
-      width: 794,
-      height: el.scrollHeight,
-      windowWidth: 794,
-      windowHeight: el.scrollHeight,
-    });
+      // Force 794px A4-equivalent width; remove clipping styles that truncate canvas
+      const saved = {
+        width: el.style.width,
+        maxWidth: el.style.maxWidth,
+        overflow: el.style.overflow,
+        borderRadius: el.style.borderRadius,
+      };
+      el.style.width = '794px';
+      el.style.maxWidth = '794px';
+      el.style.overflow = 'visible';
+      el.style.borderRadius = '0';
+      await new Promise(r => setTimeout(r, 600));
 
-    el.style.width = prevWidth;
-    el.style.maxWidth = prevMaxWidth;
+      // Scroll to top so getBoundingClientRect is accurate
+      const prevScrollY = window.scrollY;
+      window.scrollTo(0, 0);
+      await new Promise(r => setTimeout(r, 80));
 
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = pdf.internal.pageSize.getHeight();
-    const HEADER_H = 12; // mm
-    const FOOTER_H = 12; // mm
-    const CONTENT_H = pdfH - HEADER_H - FOOTER_H; // mm for pages 2+
-    const PAGE1_H = pdfH - FOOTER_H; // mm for page 1 (no header)
+      // Measure section positions relative to el (viewport-accurate)
+      const elRect = el.getBoundingClientRect();
+      const sectionEls = Array.from(el.querySelectorAll('[data-pdf-section]'));
+      const sectionTopsCssPx = sectionEls.map(s =>
+        Math.max(0, s.getBoundingClientRect().top - elRect.top)
+      );
 
-    const canvasScale = canvas.width / 794; // typically 2
-    const pxPerMm = canvas.width / pdfW;
+      // Capture full-height canvas at 2× scale
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f7f8f8',
+        logging: false,
+        width: 794,
+        height: el.scrollHeight,
+        windowWidth: 794,
+      });
 
-    // Convert CSS px section tops to canvas px
-    const sectionBreaksPx = sectionTopsCss.map(t => Math.floor(t * canvasScale));
+      // Restore styles & scroll
+      Object.assign(el.style, saved);
+      window.scrollTo(0, prevScrollY);
 
-    // Build full list of page start positions (canvas px)
-    // Each section starts a new page; subdivide if a section is taller than one page
-    const buildPageBreaks = () => {
-      const breaks = [0];
-      const allBreaks = [...new Set([0, ...sectionBreaksPx])].sort((a, b) => a - b);
+      // ── PDF layout constants ──────────────────────────────────────────────
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+      const pdfW = pdf.internal.pageSize.getWidth();   // 210 mm
+      const pdfH = pdf.internal.pageSize.getHeight();  // 297 mm
+      const HEADER_H   = 11; // mm – header bar (pages 2+)
+      const FOOTER_H   = 11; // mm – footer bar (all pages)
+      const PAGE1_SLOT = pdfH - FOOTER_H;               // 286 mm (cover page, no header)
+      const PAGE_SLOT  = pdfH - HEADER_H - FOOTER_H;   // 275 mm (subsequent pages)
+      const pxPerMm    = canvas.width / pdfW;           // canvas px per mm
 
-      for (let i = 0; i < allBreaks.length; i++) {
-        const segStart = allBreaks[i];
-        const segEnd = i + 1 < allBreaks.length ? allBreaks[i + 1] : canvas.height;
+      const siteName  = data?.audit?.site_name || 'Energy Audit';
+      const auditDate = data?.audit?.audit_date
+        ? moment(data.audit.audit_date).format('DD MMM YYYY') : '';
 
-        if (i > 0) breaks.push(segStart);
+      // ── Build page-start positions (canvas px) ────────────────────────────
+      // Rule: every section forces a new page; overflow sections are subdivided.
+      const sectionBreaksPx = sectionTopsCssPx.map(t =>
+        Math.round(t * (canvas.width / 794))
+      );
+      const rawBreaks = [...new Set([0, ...sectionBreaksPx.filter(b => b > 10)])]
+        .sort((a, b) => a - b);
 
-        // If this segment overflows a single page, add internal breaks
-        const isFirstPage = breaks.length === 1 && i === 0;
-        const slotPx = (isFirstPage ? PAGE1_H : CONTENT_H) * pxPerMm;
-        let cursor = segStart;
-        let firstSlice = true;
-        while (true) {
-          const slot = firstSlice ? (isFirstPage ? PAGE1_H : CONTENT_H) * pxPerMm : CONTENT_H * pxPerMm;
-          cursor += slot;
-          firstSlice = false;
-          if (cursor < segEnd - 10) {
-            breaks.push(Math.floor(cursor));
-          } else {
-            break;
-          }
+      const pageStartsPx = [];
+      let pageIdx = 0;
+
+      for (let si = 0; si < rawBreaks.length; si++) {
+        const segStart = rawBreaks[si];
+        const segEnd   = si + 1 < rawBreaks.length ? rawBreaks[si + 1] : canvas.height;
+
+        pageStartsPx.push(segStart);
+        const slotPx = (pageIdx === 0 ? PAGE1_SLOT : PAGE_SLOT) * pxPerMm;
+        pageIdx++;
+
+        // Subdivide if section content is taller than one page slot
+        let cursor = segStart + slotPx;
+        while (cursor < segEnd - 5) {
+          pageStartsPx.push(Math.round(cursor));
+          pageIdx++;
+          cursor += PAGE_SLOT * pxPerMm;
         }
       }
-      return [...new Set(breaks)].sort((a, b) => a - b);
-    };
 
-    const pageBreaks = buildPageBreaks();
-    const totalPages = pageBreaks.length;
+      const totalPages = pageStartsPx.length;
 
-    const siteName = data?.audit?.site_name || 'Energy Audit';
-    const auditDate = data?.audit?.audit_date ? moment(data.audit.audit_date).format('DD MMM YYYY') : '';
+      // ── Render each page ──────────────────────────────────────────────────
+      for (let pi = 0; pi < totalPages; pi++) {
+        if (pi > 0) pdf.addPage();
 
-    // Helper: slice canvas from startPx to endPx, return {dataUrl, heightMm}
-    const sliceCanvas = (startPx, endPx) => {
-      const h = Math.min(Math.ceil(endPx - startPx), canvas.height - Math.floor(startPx));
-      if (h <= 0) return null;
-      const sc = document.createElement('canvas');
-      sc.width = canvas.width;
-      sc.height = h;
-      sc.getContext('2d').drawImage(canvas, 0, Math.floor(startPx), canvas.width, h, 0, 0, canvas.width, h);
-      return { dataUrl: sc.toDataURL('image/jpeg', 0.95), heightMm: h / pxPerMm };
-    };
+        const isFirstPage  = pi === 0;
+        const startPx      = pageStartsPx[pi];
+        const slotMm       = isFirstPage ? PAGE1_SLOT : PAGE_SLOT;
+        const slotPx       = slotMm * pxPerMm;
+        const contentTopMm = isFirstPage ? 0 : HEADER_H;
 
-    for (let i = 0; i < totalPages; i++) {
-      if (i > 0) pdf.addPage();
+        // Slice EXACTLY slotPx canvas rows (or remaining rows for last page).
+        // This avoids any scaling/compression of content.
+        const sliceH = Math.min(Math.ceil(slotPx), canvas.height - startPx);
 
-      const startPx = pageBreaks[i];
-      const endPx = i + 1 < totalPages ? pageBreaks[i + 1] : canvas.height;
-      const isFirstPage = i === 0;
-      const contentTopMm = isFirstPage ? 0 : HEADER_H;
-      const slotMm = isFirstPage ? PAGE1_H : CONTENT_H;
+        if (sliceH > 0) {
+          const sc = document.createElement('canvas');
+          sc.width  = canvas.width;
+          sc.height = sliceH;
+          sc.getContext('2d').drawImage(
+            canvas, 0, startPx, canvas.width, sliceH,
+            0, 0, canvas.width, sliceH
+          );
+          const imgData = sc.toDataURL('image/jpeg', 0.93);
+          // Draw at natural mm height so no compression occurs
+          pdf.addImage(imgData, 'JPEG', 0, contentTopMm, pdfW, sliceH / pxPerMm);
+        }
 
-      const slice = sliceCanvas(startPx, endPx);
-      if (slice) {
-        const drawH = Math.min(slice.heightMm, slotMm);
-        pdf.addImage(slice.dataUrl, 'JPEG', 0, contentTopMm, pdfW, drawH);
-      }
+        // ── Header bar (pages 2+) — drawn OVER image so it's never occluded ──
+        if (!isFirstPage) {
+          pdf.setFillColor(27, 64, 64);
+          pdf.rect(0, 0, pdfW, HEADER_H, 'F');
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(8);
+          pdf.setTextColor(255, 255, 255);
+          pdf.text('SUSTAINABILITY WISE', 8, 7);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(7);
+          pdf.setTextColor(160, 196, 196);
+          pdf.text(
+            `${siteName}  |  Energy Audit Report  |  ${auditDate}`,
+            pdfW / 2, 7, { align: 'center' }
+          );
+          pdf.text(`Page ${pi + 1} of ${totalPages}`, pdfW - 8, 7, { align: 'right' });
+        }
 
-      // Header (pages 2+)
-      if (!isFirstPage) {
+        // ── Footer bar (all pages) — drawn OVER image ─────────────────────
+        const footerY = pdfH - FOOTER_H;
         pdf.setFillColor(27, 64, 64);
-        pdf.rect(0, 0, pdfW, HEADER_H - 1, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(8);
-        pdf.setTextColor(255, 255, 255);
-        pdf.text('SUSTAINABILITY WISE', 8, 7.5);
+        pdf.rect(0, footerY, pdfW, FOOTER_H, 'F');
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(7);
         pdf.setTextColor(160, 196, 196);
-        pdf.text(`${siteName}  |  Energy Audit Report  |  ${auditDate}`, pdfW / 2, 7.5, { align: 'center' });
-        pdf.text(`Page ${i + 1} of ${totalPages}`, pdfW - 8, 7.5, { align: 'right' });
+        pdf.text(
+          'Prepared by Sustainability Wise  |  Confidential Energy Audit Report',
+          pdfW / 2, footerY + 4.5, { align: 'center' }
+        );
+        pdf.setTextColor(100, 170, 160);
+        pdf.text(`${siteName}  |  ${auditDate}`, pdfW / 2, footerY + 8.5, { align: 'center' });
       }
 
-      // Footer (all pages)
-      const footerY = pdfH - FOOTER_H + 1;
-      pdf.setFillColor(27, 64, 64);
-      pdf.rect(0, pdfH - FOOTER_H, pdfW, FOOTER_H, 'F');
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(7);
-      pdf.setTextColor(160, 196, 196);
-      pdf.text('Prepared by Sustainability Wise  |  Confidential Energy Audit Report', pdfW / 2, footerY + 4, { align: 'center' });
-      pdf.setTextColor(100, 170, 160);
-      pdf.text(`${siteName}  |  ${auditDate}`, pdfW / 2, footerY + 8.5, { align: 'center' });
+      pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
+    } finally {
+      setExporting(false);
     }
-
-    pdf.save(`${siteName.replace(/\s+/g, '-')}-Energy-Audit-Report.pdf`);
-    setExporting(false);
   };
 
   const loadAll = async () => {
@@ -238,7 +260,7 @@ export default function ClientReport() {
       </div>
 
       {/* Report Document */}
-      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-12px' }} style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-10px' }}>
         <ReportHeader audit={audit} />
 
         <div className="report-content space-y-8" style={{ background: '#f7f8f8' }}>
