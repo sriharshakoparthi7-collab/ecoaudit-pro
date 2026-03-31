@@ -98,6 +98,8 @@ export function LightingFields({ data, onChange }) {
         <Field label="Rated Wattage"><Input type="number" value={data.rated_wattage || ''} onChange={e => set('rated_wattage', parseFloat(e.target.value) || '')} /></Field>
         <Field label="Quantity"><Input type="number" value={data.quantity || ''} onChange={e => set('quantity', parseInt(e.target.value) || '')} /></Field>
       </div>
+      <Field label="Number of Fixtures Installed"><Input value={data.fixtures_installed || ''} onChange={e => set('fixtures_installed', e.target.value)} /></Field>
+      <PhotoUpload value={data.fixtures_photo || ''} onChange={v => set('fixtures_photo', v)} label="Photo of Light Fixtures Installed" />
       <Field label="Area/Location"><Input value={data.area_location || ''} onChange={e => set('area_location', e.target.value)} /></Field>
       <Field label="Controls Type"><Input value={data.controls_type || ''} onChange={e => set('controls_type', e.target.value)} /></Field>
       <Field label="Operating Hours"><Input value={data.operating_hours || ''} onChange={e => set('operating_hours', e.target.value)} /></Field>

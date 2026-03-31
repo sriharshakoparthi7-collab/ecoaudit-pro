@@ -30,6 +30,14 @@
       "type": "number",
       "title": "Quantity"
     },
+    "fixtures_installed": {
+      "type": "string",
+      "title": "Number of Fixtures Installed"
+    },
+    "fixtures_photo": {
+      "type": "string",
+      "title": "Photo of Light Fixtures Installed"
+    },
     "area_location": {
       "type": "string",
       "title": "Area/Location"
