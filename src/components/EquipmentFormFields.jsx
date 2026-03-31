@@ -104,11 +104,11 @@ export function LightingFields({ data, onChange }) {
       <Field label="Controls Type"><Input value={data.controls_type || ''} onChange={e => set('controls_type', e.target.value)} /></Field>
       <Field label="Operating Hours"><Input value={data.operating_hours || ''} onChange={e => set('operating_hours', e.target.value)} /></Field>
       <Field label="Mounting Height"><Input value={data.mounting_height || ''} onChange={e => set('mounting_height', e.target.value)} /></Field>
+      <PhotoUpload value={data.mounting_constraints_photo || ''} onChange={v => set('mounting_constraints_photo', v)} label="Photo Showing Mounting Height/Access Constraints" />
       <Field label="Circuit Grouping"><Input value={data.circuit_grouping || ''} onChange={e => set('circuit_grouping', e.target.value)} /></Field>
       <PhotoUpload value={data.sensors_photo || ''} onChange={v => set('sensors_photo', v)} label="Photo of Switches/Sensors/Lighting Control Devices" />
       <Field label="Access/Installation Limitations"><Input value={data.access_limitations || ''} onChange={e => set('access_limitations', e.target.value)} /></Field>
-      <PhotoUpload value={data.mounting_constraints_photo || ''} onChange={v => set('mounting_constraints_photo', v)} label="Photo Showing Mounting Height/Access Constraints" />
-      <Field label="Photo of Switchboard/Lighting Switches Controlling the Circuit (notes/reference)"><Input value={data.switchboard_photo_notes || ''} onChange={e => set('switchboard_photo_notes', e.target.value)} /></Field>
+      <PhotoUpload value={data.switchboard_photo_notes || ''} onChange={v => set('switchboard_photo_notes', v)} label="Photo of Switchboard/Lighting Switches Controlling the Circuit" />
       <Field label="Observations for Energy Improvement"><Input value={data.energy_improvement_observations || ''} onChange={e => set('energy_improvement_observations', e.target.value)} /></Field>
     </div>
   );
