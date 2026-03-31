@@ -156,6 +156,7 @@ export function ForkliftChargerFields({ data, onChange }) {
       <Field label="Rating (V/A)"><Input value={data.rating || ''} onChange={e => set('rating', e.target.value)} /></Field>
       <PhotoUpload value={data.charger_label_photo || ''} onChange={v => set('charger_label_photo', v)} label="Photo of Charger Label/Model" />
       <Field label="Power Supply"><Input value={data.power_supply || ''} onChange={e => set('power_supply', e.target.value)} /></Field>
+      <PhotoUpload value={data.electric_connection_photo || ''} onChange={v => set('electric_connection_photo', v)} label="Photo of Electric Connection or Isolator" />
       <Field label="Location"><Input value={data.location || ''} onChange={e => set('location', e.target.value)} /></Field>
       <Field label="Quantity"><Input type="number" value={data.quantity || ''} onChange={e => set('quantity', parseInt(e.target.value) || '')} /></Field>
       <PhotoUpload value={data.charger_space_photo || ''} onChange={v => set('charger_space_photo', v)} label="Photo Showing Charger Within the Space" />

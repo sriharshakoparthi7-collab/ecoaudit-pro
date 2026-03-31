@@ -34,6 +34,10 @@
       "type": "string",
       "title": "Power Supply"
     },
+    "electric_connection_photo": {
+      "type": "string",
+      "title": "Photo of Electric Connection or Isolator"
+    },
     "location": {
       "type": "string",
       "title": "Location"
