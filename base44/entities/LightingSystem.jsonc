@@ -1,0 +1,79 @@
+{
+  "name": "LightingSystem",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "light_type": {
+      "type": "string",
+      "title": "Light Type"
+    },
+    "brand_model": {
+      "type": "string",
+      "title": "Brand/Model"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo"
+    },
+    "rated_wattage": {
+      "type": "number",
+      "title": "Rated Wattage"
+    },
+    "quantity": {
+      "type": "number",
+      "title": "Quantity"
+    },
+    "area_location": {
+      "type": "string",
+      "title": "Area/Location"
+    },
+    "controls_type": {
+      "type": "string",
+      "title": "Controls Type"
+    },
+    "operating_hours": {
+      "type": "string",
+      "title": "Operating Hours"
+    },
+    "mounting_height": {
+      "type": "string",
+      "title": "Mounting Height"
+    },
+    "circuit_grouping": {
+      "type": "string",
+      "title": "Circuit Grouping"
+    },
+    "sensors_photo": {
+      "type": "string",
+      "title": "Photo of Switches/Sensors/Lighting Control Devices"
+    },
+    "access_limitations": {
+      "type": "string",
+      "title": "Access/Installation Limitations"
+    },
+    "mounting_constraints_photo": {
+      "type": "string",
+      "title": "Photo Showing Mounting Height/Access Constraints"
+    },
+    "switchboard_photo_notes": {
+      "type": "string",
+      "title": "Photo of Switchboard/Lighting Switches Controlling the Circuit"
+    },
+    "energy_improvement_observations": {
+      "type": "string",
+      "title": "Observations for Energy Improvement"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id",
+    "light_type"
+  ]
+}

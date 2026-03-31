@@ -1,0 +1,111 @@
+{
+  "name": "ForkliftCharger",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "charger_type": {
+      "type": "string",
+      "title": "Charger Type"
+    },
+    "charger_photo": {
+      "type": "string",
+      "title": "Photo of Forklift Charger"
+    },
+    "brand_model": {
+      "type": "string",
+      "title": "Brand/Model"
+    },
+    "rating": {
+      "type": "string",
+      "title": "Rating (V/A)"
+    },
+    "charger_label_photo": {
+      "type": "string",
+      "title": "Photo of Charger Label/Model"
+    },
+    "power_supply": {
+      "type": "string",
+      "title": "Power Supply"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "quantity": {
+      "type": "number",
+      "title": "Quantity"
+    },
+    "charger_space_photo": {
+      "type": "string",
+      "title": "Photo Showing Charger Within the Space"
+    },
+    "connection_description": {
+      "type": "string",
+      "title": "How is the Charger Connected"
+    },
+    "socket_connection_photo": {
+      "type": "string",
+      "title": "Photo of Socket/Isolator/Switchboard Connection"
+    },
+    "local_isolator": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Is There a Local Isolator or Switch Near the Charger?"
+    },
+    "circuit_identifiable": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Is the Circuit for the Forklift Charger Identifiable in the Switchboard?"
+    },
+    "distance_to_switchboard": {
+      "type": "string",
+      "title": "Approximate Distance from Charger to Switchboard"
+    },
+    "space_for_additional": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Is There Sufficient Space for Additional Forklift Chargers?"
+    },
+    "hardwired_socket": {
+      "type": "string",
+      "enum": [
+        "Hardwired",
+        "Socket"
+      ],
+      "title": "Hardwired/Socket"
+    },
+    "scheduling_opportunity": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Scheduling Opportunity"
+    },
+    "energy_improvement_observations": {
+      "type": "string",
+      "title": "Observations for Energy Improvement"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id",
+    "charger_type"
+  ]
+}

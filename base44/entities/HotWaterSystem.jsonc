@@ -1,0 +1,83 @@
+{
+  "name": "HotWaterSystem",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "dhw_details_type": {
+      "type": "string",
+      "title": "DHW Details/Type"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo"
+    },
+    "serial_number": {
+      "type": "string",
+      "title": "Serial Number"
+    },
+    "size_liters": {
+      "type": "number",
+      "title": "Size (Liters)"
+    },
+    "fuel_type": {
+      "type": "string",
+      "title": "Fuel Type"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "pipe_insulation": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Pipe Insulation"
+    },
+    "pipe_insulation_thickness": {
+      "type": "string",
+      "title": "Thickness of Water Pipe Insulation"
+    },
+    "tempering_valve": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Tempering Valve"
+    },
+    "additional_photo": {
+      "type": "string",
+      "title": "Additional Photo"
+    },
+    "more_dhw_systems": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Any More DHW Systems?"
+    },
+    "additional_comments": {
+      "type": "string",
+      "title": "Additional Comments (condition, access issues, etc.)"
+    },
+    "energy_improvement_observations": {
+      "type": "string",
+      "title": "Observations for Energy Improvements"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id",
+    "dhw_details_type"
+  ]
+}

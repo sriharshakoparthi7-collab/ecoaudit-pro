@@ -1,0 +1,90 @@
+{
+  "name": "SolarPV",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "system_size_kw": {
+      "type": "number",
+      "title": "System Size (kW)"
+    },
+    "roof_photo": {
+      "type": "string",
+      "title": "Roof Photo"
+    },
+    "inverter_brand_model": {
+      "type": "string",
+      "title": "Inverter Brand/Model"
+    },
+    "inverter_location": {
+      "type": "string",
+      "title": "Inverter Location"
+    },
+    "inverter_label_photo": {
+      "type": "string",
+      "title": "Photo of Inverters and Label/Model"
+    },
+    "power_supply_to_pv": {
+      "type": "string",
+      "title": "Power Supply to the PV System"
+    },
+    "electricity_meter_photo": {
+      "type": "string",
+      "title": "Photo of Electricity Meter"
+    },
+    "available_roof_space": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Available Roof Space"
+    },
+    "roof_space_amount": {
+      "type": "string",
+      "title": "How Much Roof Space is Available"
+    },
+    "additional_solar_space_photo": {
+      "type": "string",
+      "title": "Photo Showing Available Space for Additional Solar Panels"
+    },
+    "suitable_switchboard": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "title": "Is There a Switchable Switchboard for Solar PV Connection?"
+    },
+    "switchboard_photo": {
+      "type": "string",
+      "title": "Photo of the Switchboard"
+    },
+    "switchboard_location": {
+      "type": "string",
+      "title": "Location of the Switchboard"
+    },
+    "cable_distance": {
+      "type": "string",
+      "title": "Estimated Cable Distance Between Solar PV Area and Switchboard"
+    },
+    "cable_route_description": {
+      "type": "string",
+      "title": "Cable Route Description"
+    },
+    "energy_improvement_observations": {
+      "type": "string",
+      "title": "Observations for Energy Improvements"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id"
+  ]
+}

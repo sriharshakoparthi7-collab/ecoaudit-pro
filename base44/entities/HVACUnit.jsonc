@@ -1,0 +1,99 @@
+{
+  "name": "HVACUnit",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "unit_name": {
+      "type": "string",
+      "title": "Unit Name"
+    },
+    "make": {
+      "type": "string",
+      "title": "Make"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Packaged",
+        "Split"
+      ],
+      "title": "Type"
+    },
+    "model": {
+      "type": "string",
+      "title": "Model"
+    },
+    "serial_number": {
+      "type": "string",
+      "title": "Serial Number"
+    },
+    "heating_capacity_kw": {
+      "type": "number",
+      "title": "Heating Capacity (kW)"
+    },
+    "cooling_capacity_kw": {
+      "type": "number",
+      "title": "Cooling Capacity (kW)"
+    },
+    "power_supply_phase": {
+      "type": "string",
+      "title": "Power Supply Phase"
+    },
+    "nameplate_photos": {
+      "type": "string",
+      "title": "Nameplate Photos"
+    },
+    "indoor_unit_model": {
+      "type": "string",
+      "title": "HVAC Indoor Unit Model Number"
+    },
+    "indoor_unit_serial": {
+      "type": "string",
+      "title": "HVAC Indoor Unit Serial Number"
+    },
+    "indoor_unit_nameplate_photo": {
+      "type": "string",
+      "title": "Indoor Unit Nameplate Photo"
+    },
+    "controller_type": {
+      "type": "string",
+      "title": "Controller Type"
+    },
+    "controller_model": {
+      "type": "string",
+      "title": "HVAC Controller Model Number"
+    },
+    "controller_photo": {
+      "type": "string",
+      "title": "HVAC Controller Photo"
+    },
+    "temperature_sensor_type": {
+      "type": "string",
+      "title": "HVAC Temperature Sensor/Thermostat Type"
+    },
+    "system_coverage": {
+      "type": "string",
+      "title": "HVAC System Coverage"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id",
+    "unit_name"
+  ]
+}

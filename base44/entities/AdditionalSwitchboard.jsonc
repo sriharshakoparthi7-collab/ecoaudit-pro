@@ -1,0 +1,53 @@
+{
+  "name": "AdditionalSwitchboard",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "map_locator": {
+      "type": "string",
+      "title": "Map Locator"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "MSSB",
+        "PVDB",
+        "DSB-W",
+        "DSB-S"
+      ],
+      "title": "Type"
+    },
+    "photo": {
+      "type": "string",
+      "title": "Photo"
+    },
+    "sub_circuits_description": {
+      "type": "string",
+      "title": "Sub-Circuits Description"
+    },
+    "comments": {
+      "type": "string",
+      "title": "Comments"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id",
+    "name"
+  ]
+}
