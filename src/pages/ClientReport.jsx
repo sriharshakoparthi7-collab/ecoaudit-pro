@@ -46,15 +46,15 @@ export default function ClientReport() {
     // Build filtered data based on config
     const filtered = config ? {
       ...baseData,
-      hvacs: config.sections.has('hvac') ? (data.hvacs.filter(i => config.items.hvac?.has(i.id) ?? true)) : [],
-      lights: config.sections.has('lighting') ? (data.lights.filter(i => config.items.lighting?.has(i.id) ?? true)) : [],
-      solars: config.sections.has('solar') ? (data.solars.filter(i => config.items.solar?.has(i.id) ?? true)) : [],
-      forklifts: config.sections.has('forklift') ? (data.forklifts.filter(i => config.items.forklift?.has(i.id) ?? true)) : [],
-      hotWaters: config.sections.has('hotwater') ? (data.hotWaters.filter(i => config.items.hotwater?.has(i.id) ?? true)) : [],
-      mains: config.sections.has('electrical') ? data.mains : [],
-      additionals: config.sections.has('electrical') ? data.additionals : [],
+      hvacs: config.sections.has('hvac') ? (baseData.hvacs.filter(i => config.items.hvac?.has(i.id) ?? true)) : [],
+      lights: config.sections.has('lighting') ? (baseData.lights.filter(i => config.items.lighting?.has(i.id) ?? true)) : [],
+      solars: config.sections.has('solar') ? (baseData.solars.filter(i => config.items.solar?.has(i.id) ?? true)) : [],
+      forklifts: config.sections.has('forklift') ? (baseData.forklifts.filter(i => config.items.forklift?.has(i.id) ?? true)) : [],
+      hotWaters: config.sections.has('hotwater') ? (baseData.hotWaters.filter(i => config.items.hotwater?.has(i.id) ?? true)) : [],
+      mains: config.sections.has('electrical') ? baseData.mains : [],
+      additionals: config.sections.has('electrical') ? baseData.additionals : [],
       _showObservations: config.sections.has('observations'),
-    } : data;
+    } : baseData;
     setExportFilter(filtered);
     // Wait for re-render then capture
     await new Promise(r => setTimeout(r, 300));
