@@ -11,6 +11,8 @@ function getEquipmentLabel(item, type) {
     case 'solar': return `Solar PV ${item.system_size_kw ? `(${item.system_size_kw} kW)` : ''}`;
     case 'forklift': return item.charger_type || 'Forklift Charger';
     case 'hotwater': return item.dhw_details_type || 'Hot Water System';
+    case 'general_water': return item.question || 'General Water';
+    case 'general_electricity': return item.question || 'General Electricity';
     default: return 'Equipment';
   }
 }
@@ -24,6 +26,8 @@ function getEquipmentSubLabel(item, type) {
     case 'solar': return item.inverter_brand_model || '';
     case 'forklift': return item.brand_model || '';
     case 'hotwater': return item.fuel_type ? `${item.fuel_type}${item.size_liters ? ` — ${item.size_liters}L` : ''}` : '';
+    case 'general_water':
+    case 'general_electricity': return item.answer || '';
     default: return '';
   }
 }

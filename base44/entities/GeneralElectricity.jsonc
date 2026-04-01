@@ -1,0 +1,44 @@
+{
+  "name": "GeneralElectricity",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "title": "Zone ID"
+    },
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "question": {
+      "type": "string",
+      "title": "Question"
+    },
+    "answer": {
+      "type": "string",
+      "title": "Answer"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Photos"
+    },
+    "extra_notes": {
+      "type": "string",
+      "title": "Additional Notes"
+    },
+    "extra_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Additional Photos"
+    }
+  },
+  "required": [
+    "zone_id",
+    "audit_id"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Zone",
+  "type": "object",
+  "properties": {
+    "audit_id": {
+      "type": "string",
+      "title": "Audit ID"
+    },
+    "zone_name": {
+      "type": "string",
+      "title": "Zone Name"
+    },
+    "zone_description": {
+      "type": "string",
+      "title": "Zone Description"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Zone Photos"
+    }
+  },
+  "required": [
+    "audit_id",
+    "zone_name"
+  ]
+}

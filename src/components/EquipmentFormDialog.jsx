@@ -11,6 +11,8 @@ import {
   SolarPVFields,
   ForkliftChargerFields,
   HotWaterFields,
+  GeneralWaterFields,
+  GeneralElectricityFields,
 } from './EquipmentFormFields';
 
 const FORM_MAP = {
@@ -21,6 +23,8 @@ const FORM_MAP = {
   solar: SolarPVFields,
   forklift: ForkliftChargerFields,
   hotwater: HotWaterFields,
+  general_water: GeneralWaterFields,
+  general_electricity: GeneralElectricityFields,
 };
 
 export default function EquipmentFormDialog({ open, onClose, type, initialData, onSave }) {
