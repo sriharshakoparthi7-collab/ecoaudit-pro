@@ -89,6 +89,17 @@
     "system_coverage": {
       "type": "string",
       "title": "HVAC System Coverage"
+    },
+    "extra_notes": {
+      "type": "string",
+      "title": "Additional Notes"
+    },
+    "extra_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Additional Photos"
     }
   },
   "required": [

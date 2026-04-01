@@ -1,8 +1,8 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import PhotoUpload from './PhotoUpload';
-import MultiPhotoUpload from './MultiPhotoUpload';
 import MobileSelect from './MobileSelect';
+import MultiPhotoUpload from './MultiPhotoUpload';
 
 function Field({ label, children }) {
   return (
@@ -15,6 +15,17 @@ function Field({ label, children }) {
 
 const YES_NO = [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }];
 
+function ExtraNotesPhotos({ data, onChange }) {
+  const set = (key, val) => onChange({ ...data, [key]: val });
+  return (
+    <div className="space-y-4 pt-4 mt-4 border-t border-border">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Additional Notes & Photos</p>
+      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any extra observations..." /></Field>
+      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+    </div>
+  );
+}
+
 export function MainSwitchboardFields({ data, onChange }) {
   const set = (key, val) => onChange({ ...data, [key]: val });
   return (
@@ -26,8 +37,7 @@ export function MainSwitchboardFields({ data, onChange }) {
       <PhotoUpload value={data.photo || ''} onChange={v => set('photo', v)} />
       <Field label="Sub-Circuits Description"><Textarea value={data.sub_circuits_description || ''} onChange={e => set('sub_circuits_description', e.target.value)} rows={3} /></Field>
       <Field label="Comments"><Textarea value={data.comments || ''} onChange={e => set('comments', e.target.value)} rows={3} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -51,8 +61,7 @@ export function AdditionalSwitchboardFields({ data, onChange }) {
       <PhotoUpload value={data.photo || ''} onChange={v => set('photo', v)} />
       <Field label="Sub-Circuits Description"><Textarea value={data.sub_circuits_description || ''} onChange={e => set('sub_circuits_description', e.target.value)} rows={3} /></Field>
       <Field label="Comments"><Textarea value={data.comments || ''} onChange={e => set('comments', e.target.value)} rows={3} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -88,8 +97,7 @@ export function HVACFields({ data, onChange }) {
       <PhotoUpload value={data.controller_photo || ''} onChange={v => set('controller_photo', v)} label="Photo of HVAC Controller" />
       <Field label="HVAC Temperature Sensor/Thermostat Type"><Input value={data.temperature_sensor_type || ''} onChange={e => set('temperature_sensor_type', e.target.value)} /></Field>
       <Field label="HVAC System Coverage"><Input value={data.system_coverage || ''} onChange={e => set('system_coverage', e.target.value)} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -117,8 +125,7 @@ export function LightingFields({ data, onChange }) {
       <Field label="Access/Installation Limitations"><Input value={data.access_limitations || ''} onChange={e => set('access_limitations', e.target.value)} /></Field>
       <PhotoUpload value={data.switchboard_photo_notes || ''} onChange={v => set('switchboard_photo_notes', v)} label="Photo of Switchboard/Lighting Switches Controlling the Circuit" />
       <Field label="Observations for Energy Improvement"><Input value={data.energy_improvement_observations || ''} onChange={e => set('energy_improvement_observations', e.target.value)} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -151,8 +158,7 @@ export function SolarPVFields({ data, onChange }) {
       <Field label="Estimated Cable Distance (Solar PV Area to Switchboard)"><Input value={data.cable_distance || ''} onChange={e => set('cable_distance', e.target.value)} /></Field>
       <Field label="Cable Route Description"><Textarea value={data.cable_route_description || ''} onChange={e => set('cable_route_description', e.target.value)} rows={3} /></Field>
       <Field label="Observations for Energy Improvements"><Input value={data.energy_improvement_observations || ''} onChange={e => set('energy_improvement_observations', e.target.value)} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -191,8 +197,7 @@ export function ForkliftChargerFields({ data, onChange }) {
         <MobileSelect value={data.scheduling_opportunity || ''} onValueChange={v => set('scheduling_opportunity', v)} placeholder="Select" options={YES_NO} />
       </Field>
       <Field label="Observations for Energy Improvement"><Textarea value={data.energy_improvement_observations || ''} onChange={e => set('energy_improvement_observations', e.target.value)} rows={3} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -220,8 +225,7 @@ export function HotWaterFields({ data, onChange }) {
       </Field>
       <Field label="Additional Comments (condition, access issues, etc.)"><Textarea value={data.additional_comments || ''} onChange={e => set('additional_comments', e.target.value)} rows={3} /></Field>
       <Field label="Observations for Energy Improvements"><Textarea value={data.energy_improvement_observations || ''} onChange={e => set('energy_improvement_observations', e.target.value)} rows={3} /></Field>
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -231,10 +235,9 @@ export function GeneralWaterFields({ data, onChange }) {
   return (
     <div className="space-y-4">
       <Field label="Question"><Input value={data.question || ''} onChange={e => set('question', e.target.value)} placeholder="Enter your question..." /></Field>
-      <Field label="Answer"><Textarea value={data.answer || ''} onChange={e => set('answer', e.target.value)} rows={3} placeholder="Enter your answer..." /></Field>
+      <Field label="Answer"><Input value={data.answer || ''} onChange={e => set('answer', e.target.value)} placeholder="Enter the answer..." /></Field>
       <MultiPhotoUpload value={data.photos || []} onChange={v => set('photos', v)} label="Photos" />
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }
@@ -244,10 +247,9 @@ export function GeneralElectricityFields({ data, onChange }) {
   return (
     <div className="space-y-4">
       <Field label="Question"><Input value={data.question || ''} onChange={e => set('question', e.target.value)} placeholder="Enter your question..." /></Field>
-      <Field label="Answer"><Textarea value={data.answer || ''} onChange={e => set('answer', e.target.value)} rows={3} placeholder="Enter your answer..." /></Field>
+      <Field label="Answer"><Input value={data.answer || ''} onChange={e => set('answer', e.target.value)} placeholder="Enter the answer..." /></Field>
       <MultiPhotoUpload value={data.photos || []} onChange={v => set('photos', v)} label="Photos" />
-      <Field label="Additional Notes"><Textarea value={data.extra_notes || ''} onChange={e => set('extra_notes', e.target.value)} rows={3} placeholder="Any additional observations..." /></Field>
-      <MultiPhotoUpload value={data.extra_photos || []} onChange={v => set('extra_photos', v)} label="Additional Photos" />
+      <ExtraNotesPhotos data={data} onChange={onChange} />
     </div>
   );
 }

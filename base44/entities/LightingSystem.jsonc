@@ -54,6 +54,10 @@
       "type": "string",
       "title": "Mounting Height"
     },
+    "mounting_constraints_photo": {
+      "type": "string",
+      "title": "Photo Showing Mounting Height/Access Constraints"
+    },
     "circuit_grouping": {
       "type": "string",
       "title": "Circuit Grouping"
@@ -66,10 +70,6 @@
       "type": "string",
       "title": "Access/Installation Limitations"
     },
-    "mounting_constraints_photo": {
-      "type": "string",
-      "title": "Photo Showing Mounting Height/Access Constraints"
-    },
     "switchboard_photo_notes": {
       "type": "string",
       "title": "Photo of Switchboard/Lighting Switches Controlling the Circuit"
@@ -77,6 +77,17 @@
     "energy_improvement_observations": {
       "type": "string",
       "title": "Observations for Energy Improvement"
+    },
+    "extra_notes": {
+      "type": "string",
+      "title": "Additional Notes"
+    },
+    "extra_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Additional Photos"
     }
   },
   "required": [

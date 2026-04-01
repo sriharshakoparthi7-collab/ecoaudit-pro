@@ -73,6 +73,17 @@
     "energy_improvement_observations": {
       "type": "string",
       "title": "Observations for Energy Improvements"
+    },
+    "extra_notes": {
+      "type": "string",
+      "title": "Additional Notes"
+    },
+    "extra_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Additional Photos"
     }
   },
   "required": [

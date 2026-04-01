@@ -1,5 +1,5 @@
 {
-  "name": "AdditionalSwitchboard",
+  "name": "MainSwitchboard",
   "type": "object",
   "properties": {
     "zone_id": {
@@ -20,17 +20,11 @@
     },
     "map_locator": {
       "type": "string",
-      "title": "Map Locator"
+      "title": "Map Locator (GPS)"
     },
-    "type": {
+    "site_nmi": {
       "type": "string",
-      "enum": [
-        "MSSB",
-        "PVDB",
-        "DSB-W",
-        "DSB-S"
-      ],
-      "title": "Type"
+      "title": "Site NMI"
     },
     "photo": {
       "type": "string",

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import MultiPhotoUpload from '../components/MultiPhotoUpload';
 import { toast } from 'sonner';
 import EquipmentGrid from '../components/EquipmentGrid';
@@ -29,6 +29,7 @@ export default function ZoneWorkspace() {
   const [formOpen, setFormOpen] = useState(false);
   const [formType, setFormType] = useState(null);
   const [editItem, setEditItem] = useState(null);
+  const [savingZone, setSavingZone] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -124,16 +125,23 @@ export default function ZoneWorkspace() {
           {zone?.zone_description && (
             <p className="text-sm text-muted-foreground mt-1">{zone.zone_description}</p>
           )}
-          <p className="text-xs text-muted-foreground mt-2 mb-3">{totalEquipment} equipment items</p>
-          <MultiPhotoUpload
-            value={zone?.photos || []}
-            onChange={async (photos) => {
-              setZone(prev => ({ ...prev, photos }));
-              await base44.entities.Zone.update(zoneId, { photos });
-            }}
-            label="Zone Photos"
-          />
+          <p className="text-xs text-muted-foreground mt-2">{totalEquipment} equipment items</p>
         </div>
+      </div>
+
+      {/* Zone Photos */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Zone Photos</h2>
+        <MultiPhotoUpload
+          value={zone?.photos || []}
+          onChange={async (photos) => {
+            setZone(prev => ({ ...prev, photos }));
+            setSavingZone(true);
+            await base44.entities.Zone.update(zoneId, { photos });
+            setSavingZone(false);
+          }}
+          label={savingZone ? 'Saving...' : 'Add photos of this zone'}
+        />
       </div>
 
       {/* Add Equipment Grid */}
