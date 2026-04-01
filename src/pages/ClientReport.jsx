@@ -62,7 +62,7 @@ export default function ClientReport() {
     const { default: html2canvas } = await import('html2canvas');
     const el = reportRef.current;
     const canvas = await html2canvas(el, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#f7f8f8',
@@ -142,7 +142,7 @@ export default function ClientReport() {
       sliceCanvas.height = Math.ceil(srcHPx);
       const ctx = sliceCanvas.getContext('2d');
       ctx.drawImage(canvas, 0, -Math.floor(srcYPx));
-      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 1.0);
       const sliceH = (sliceCanvas.height * contentW) / canvas.width;
 
       pdf.addImage(sliceData, 'JPEG', marginX, contentTop, contentW, sliceH);
@@ -346,8 +346,8 @@ export function PhotoBox({ url, label }) {
   const [failed, setFailed] = useState(false);
   if (!url || failed) return null;
   return (
-    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '280px' }}>
-      <img src={url} alt={label || 'Photo'} onError={() => setFailed(true)} style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block', border: 'none' }} />
+    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '320px' }}>
+      <img src={url} alt={label || 'Photo'} onError={() => setFailed(true)} style={{ width: '100%', height: '260px', objectFit: 'cover', display: 'block', border: 'none' }} />
       {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
     </div>
   );
