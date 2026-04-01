@@ -34,6 +34,17 @@ export default function ReportForklift({ forklifts, zoneMap }) {
                 </div>
               </div>
 
+              {(fc.charger_photo || fc.extra_photos?.length > 0) && (
+                <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <PhotoBox url={fc.charger_photo} label="Forklift Charger" />
+                    {(fc.extra_photos || []).map((url, i) => (
+                      <PhotoBox key={i} url={url} label={`Extra Photo ${i + 1}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

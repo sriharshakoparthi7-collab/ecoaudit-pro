@@ -24,11 +24,14 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Sub-Circuits & Ratings" value={msb.sub_circuits_description} />
               <FieldRow label="Zone" value={zoneMap[msb.zone_id]} />
               <FieldRow label="Auditor Comments" value={msb.comments} />
-              {msb.photo && (
+              {(msb.photo || msb.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ marginTop: '12px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={msb.photo} label="Main Switchboard" />
+                    {(msb.extra_photos || []).map((url, i) => (
+                      <PhotoBox key={i} url={url} label={`Extra Photo ${i + 1}`} />
+                    ))}
                   </div>
                 </div>
               )}
@@ -77,13 +80,16 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
                 </tbody>
               </table>
             </div>
-            {additionals.some(sb => sb.photo) && (
+            {additionals.some(sb => sb.photo || sb.extra_photos?.length > 0) && (
               <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '12px' }}>
                 <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                  {additionals.filter(sb => sb.photo).slice(0, 2).map(sb => (
+                  {additionals.filter(sb => sb.photo).map(sb => (
                     <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
                   ))}
+                  {additionals.flatMap(sb => (sb.extra_photos || []).map((url, i) => (
+                    <PhotoBox key={`${sb.id}-extra-${i}`} url={url} label={`${sb.name || 'Switchboard'} — Extra ${i + 1}`} />
+                  )))}
                 </div>
               </div>
             )}
