@@ -356,7 +356,7 @@ export default function PhotoPreview() {
                 />
               </div>
 
-              <div className="px-10 py-5 text-center text-xs" style={{ background: '#1B4040', color: '#a0c4c4' }}>
+              <div className="px-10 py-5 text-center text-xs" style={{ background: '#162A4E', color: '#b8d49a' }}>
                 Prepared by Sustainability Wise &nbsp;|&nbsp; Confidential Energy Audit Report &nbsp;|&nbsp;{' '}
                 {moment().format('MMMM YYYY')} &nbsp;|&nbsp; {displayData.audit.site_name}
               </div>
