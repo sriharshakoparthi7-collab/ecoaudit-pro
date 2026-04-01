@@ -28,7 +28,7 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
 
   const openCamera = async () => {
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 9999 }, height: { ideal: 9999 } }, audio: false });
       setStream(s);
       setCameraOpen(true);
       setTimeout(() => {
@@ -52,7 +52,7 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
       await uploadFile(file);
-    }, 'image/jpeg', 0.92);
+    }, 'image/jpeg', 1.0);
   };
 
   const closeCamera = () => {

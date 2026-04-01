@@ -25,7 +25,7 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
 
   const openCamera = async () => {
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 9999 }, height: { ideal: 9999 } }, audio: false });
       setStream(s);
       setCameraOpen(true);
       // Attach stream to video after state update
@@ -51,7 +51,7 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
       await uploadFile(file);
-    }, 'image/jpeg', 0.92);
+    }, 'image/jpeg', 1.0);
   };
 
   const closeCamera = () => {
