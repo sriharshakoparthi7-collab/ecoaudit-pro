@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Download, Loader2, Settings2 } from 'lucide-react';
 import moment from 'moment';
@@ -13,9 +13,24 @@ import ReportForklift from '../components/report/ReportForklift';
 import ReportHotWater from '../components/report/ReportHotWater';
 import ReportObservations from '../components/report/ReportObservations';
 
+function removeExcludedPhotos(obj, excludedSet) {
+  if (!obj || excludedSet.size === 0) return obj;
+  const result = { ...obj };
+  for (const [key, val] of Object.entries(result)) {
+    if (typeof val === 'string' && excludedSet.has(val)) {
+      result[key] = '';
+    } else if (Array.isArray(val)) {
+      result[key] = val.filter(v => !excludedSet.has(v));
+    }
+  }
+  return result;
+}
+
 export default function ClientReport() {
   const { auditId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const excludedPhotos = new Set(location.state?.excludedPhotos || []);
   const reportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [data, setData] = useState(null);
@@ -30,7 +45,7 @@ export default function ClientReport() {
     setExporting(true);
     // Build filtered data based on config
     const filtered = config ? {
-      ...data,
+      ...baseData,
       hvacs: config.sections.has('hvac') ? (data.hvacs.filter(i => config.items.hvac?.has(i.id) ?? true)) : [],
       lights: config.sections.has('lighting') ? (data.lights.filter(i => config.items.lighting?.has(i.id) ?? true)) : [],
       solars: config.sections.has('solar') ? (data.solars.filter(i => config.items.solar?.has(i.id) ?? true)) : [],
@@ -143,7 +158,17 @@ export default function ClientReport() {
   };
 
   const [exportFilter, setExportFilter] = useState(null);
-  const displayData = exportFilter || data;
+  const baseData = data ? {
+    ...data,
+    mains: (data.mains || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    additionals: (data.additionals || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    hvacs: (data.hvacs || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    lights: (data.lights || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    solars: (data.solars || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    forklifts: (data.forklifts || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    hotWaters: (data.hotWaters || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+  } : data;
+  const displayData = exportFilter || baseData;
 
   const loadAll = async () => {
     const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters] = await Promise.all([
@@ -206,7 +231,7 @@ export default function ClientReport() {
       {/* Toolbar */}
       <div className="no-print flex items-center justify-between mb-6">
         <button
-          onClick={() => navigate(`/audit/${auditId}/report`)}
+          onClick={() => navigate(`/audit/${auditId}/photo-preview`)}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

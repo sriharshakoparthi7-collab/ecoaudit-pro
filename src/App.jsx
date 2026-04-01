@@ -13,6 +13,7 @@ import ZoneWorkspace from './pages/ZoneWorkspace';
 import AuditReport from './pages/AuditReport';
 import ClientReport from './pages/ClientReport';
 import Settings from './pages/Settings';
+import PhotoPreview from './pages/PhotoPreview';
 
 
 const AuthenticatedApp = () => {
@@ -47,6 +48,7 @@ const AuthenticatedApp = () => {
         <Route path="/audit/:auditId/zone/:zoneId" element={<ZoneWorkspace />} />
         <Route path="/audit/:auditId/report" element={<AuditReport />} />
         <Route path="/audit/:auditId/client-report" element={<ClientReport />} />
+        <Route path="/audit/:auditId/photo-preview" element={<PhotoPreview />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />

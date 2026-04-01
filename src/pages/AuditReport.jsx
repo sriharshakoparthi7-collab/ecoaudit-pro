@@ -79,12 +79,13 @@ export default function AuditReport() {
               <span>{totalEquipment} items</span>
             </div>
           </div>
-          <a href={`/audit/${auditId}/client-report`} className="flex-shrink-0">
+          <a href={`/audit/${auditId}/photo-preview`} className="flex-shrink-0">
             <Button size="sm" className="text-xs">
               <FileText className="w-3.5 h-3.5 mr-1.5" />
               Client Report
             </Button>
           </a>
+          </div>
         </div>
       </div>
       </div>
