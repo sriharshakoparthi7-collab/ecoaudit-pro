@@ -38,16 +38,24 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2">
-              <label className="flex flex-col items-center justify-center h-20 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-muted/30">
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current.click()}
+                className="flex flex-col items-center justify-center h-20 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-muted/30 w-full"
+              >
                 <Camera className="w-5 h-5 text-muted-foreground mb-1" />
                 <span className="text-xs text-muted-foreground">Take Photo</span>
-                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
-              </label>
-              <label className="flex flex-col items-center justify-center h-20 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-muted/30">
+              </button>
+              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
+              <button
+                type="button"
+                onClick={() => galleryInputRef.current.click()}
+                className="flex flex-col items-center justify-center h-20 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer bg-muted/30 w-full"
+              >
                 <ImagePlus className="w-5 h-5 text-muted-foreground mb-1" />
                 <span className="text-xs text-muted-foreground">Choose Photo</span>
-                <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
-              </label>
+              </button>
+              <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
             </div>
           )}
         </div>
