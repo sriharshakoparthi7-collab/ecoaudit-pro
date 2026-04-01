@@ -32,7 +32,7 @@ function BulletPoint({ children }) {
   );
 }
 
-export default function ReportObservations({ lights, solars, forklifts, hotWaters }) {
+export default function ReportObservations({ lights, solars, forklifts, hotWaters, extraNotes = {} }) {
   const totalLightingKW = lights.reduce((s, l) => s + (l.rated_wattage || 0) * (l.quantity || 1) / 1000, 0);
   const hasLEDOpportunity = lights.some(l => l.light_type && !l.light_type.toLowerCase().includes('led'));
   const hasSolar = solars.some(s => s.system_size_kw);
@@ -63,6 +63,7 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
               )}
             </>
           )}
+          {extraNotes.obs_lighting && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_lighting}</p>}
         </ObservationBlock>
 
         <ObservationBlock number="7.2" title="Solar PV Optimization">
@@ -82,6 +83,7 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
               )}
             </>
           )}
+          {extraNotes.obs_solar && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_solar}</p>}
         </ObservationBlock>
 
         <ObservationBlock number="7.3" title="Load Shifting — Forklift Charging">
@@ -99,6 +101,7 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
               )}
             </>
           )}
+          {extraNotes.obs_forklift && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_forklift}</p>}
         </ObservationBlock>
 
         <ObservationBlock number="7.4" title="Hot Water Efficiency">
@@ -124,6 +127,7 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
               )}
             </>
           )}
+          {extraNotes.obs_hotwater && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_hotwater}</p>}
         </ObservationBlock>
       </div>
 

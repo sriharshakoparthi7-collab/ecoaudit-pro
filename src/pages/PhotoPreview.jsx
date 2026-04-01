@@ -12,6 +12,7 @@ import ReportSolar from '../components/report/ReportSolar';
 import ReportForklift from '../components/report/ReportForklift';
 import ReportHotWater from '../components/report/ReportHotWater';
 import ReportObservations from '../components/report/ReportObservations';
+import ReportContentEditor from '../components/report/ReportContentEditor';
 import moment from 'moment';
 
 const EQUIPMENT_LABELS = {
@@ -84,6 +85,7 @@ export default function PhotoPreview() {
   const [groups, setGroups] = useState([]);
   const [excluded, setExcluded] = useState(new Set());
   const [rawData, setRawData] = useState(null);
+  const [editedContent, setEditedContent] = useState({});
 
   useEffect(() => {
     loadAll();
@@ -153,7 +155,7 @@ export default function PhotoPreview() {
 
   const handleGenerate = () => {
     navigate(`/audit/${auditId}/client-report`, {
-      state: { excludedPhotos: [...excluded] },
+      state: { excludedPhotos: [...excluded], editedContent },
     });
   };
 
@@ -288,11 +290,7 @@ export default function PhotoPreview() {
 
         {/* Live Report Preview Tab */}
         <TabsContent value="preview" className="mt-4">
-          <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 mb-4">
-            <p className="text-sm text-muted-foreground">
-              This is a live preview of your report. Go back to "Select Photos" to exclude images — changes appear here instantly.
-            </p>
-          </div>
+          <ReportContentEditor content={editedContent} onChange={setEditedContent} />
 
           {displayData && (
             <div className="report-body rounded-2xl overflow-hidden shadow-xl border border-border" style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#f7f8f8' }}>
@@ -314,10 +312,17 @@ export default function PhotoPreview() {
                   </h2>
                   <div className="bg-white rounded-xl p-5 shadow-sm">
                     <p style={{ fontSize: '11pt', color: '#2c4a4a', lineHeight: 1.7 }}>
-                      This report details the findings of a comprehensive energy audit conducted at the{' '}
-                      <strong>{displayData.audit.site_name}</strong> facility located at <strong>{displayData.audit.site_address}</strong>.
-                      The audit assessed the site's electrical infrastructure, HVAC, lighting, solar PV potential,
-                      forklift charging operations, and hot water systems.
+                      {editedContent.execSummary
+                      ? editedContent.execSummary
+                      : (
+                        <>
+                          This report details the findings of a comprehensive energy audit conducted at the{' '}
+                          <strong>{displayData.audit.site_name}</strong> facility located at <strong>{displayData.audit.site_address}</strong>.
+                          The audit assessed the site's electrical infrastructure, HVAC, lighting, solar PV potential,
+                          forklift charging operations, and hot water systems.
+                        </>
+                      )
+                    }
                     </p>
                     <div className="mt-4 grid grid-cols-3 gap-3">
                       {[
@@ -347,6 +352,7 @@ export default function PhotoPreview() {
                   solars={displayData.solars || []}
                   forklifts={displayData.forklifts || []}
                   hotWaters={displayData.hotWaters || []}
+                  extraNotes={editedContent}
                 />
               </div>
 

@@ -31,6 +31,7 @@ export default function ClientReport() {
   const navigate = useNavigate();
   const location = useLocation();
   const excludedPhotos = new Set(location.state?.excludedPhotos || []);
+  const editedContent = location.state?.editedContent || {};
   const reportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [data, setData] = useState(null);
@@ -259,11 +260,13 @@ export default function ClientReport() {
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <p className="text-sm leading-relaxed" style={{ color: '#2c4a4a' }}>
                 This report details the findings of a comprehensive energy audit conducted at the{' '}
-                <strong>{audit.site_name}</strong> facility located at <strong>{audit.site_address}</strong>.
+                {editedContent.execSummary ? editedContent.execSummary : (
+                  <><strong>{audit.site_name}</strong> facility located at <strong>{audit.site_address}</strong>.
                 The audit assessed the site's electrical infrastructure, HVAC, lighting, solar PV potential,
                 forklift charging operations, and hot water systems. The goal of this assessment is to establish
                 a baseline of current energy-consuming assets and identify opportunities for efficiency upgrades,
-                load management, and emissions reductions.
+                load management, and emissions reductions.</>
+                )}
               </p>
               <div className="mt-4 grid grid-cols-3 gap-4">
                 <InfoBox label="Audit Date" value={moment(audit.audit_date).format('MMMM D, YYYY')} />
@@ -287,6 +290,7 @@ export default function ClientReport() {
                   solars={displayData.solars || []}
                   forklifts={displayData.forklifts || []}
                   hotWaters={displayData.hotWaters || []}
+                  extraNotes={editedContent}
                 />
               )}
         </div>
