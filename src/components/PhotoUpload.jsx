@@ -6,9 +6,18 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
   const [uploading, setUploading] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const galleryInputRef = useRef(null);
+
+  const setVideoRef = (el) => {
+    videoRef.current = el;
+    if (el && streamRef.current) {
+      el.srcObject = streamRef.current;
+      el.play().catch(() => {});
+    }
+  };
 
   const uploadFile = async (file) => {
     setUploading(true);
@@ -26,17 +35,14 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
   const openCamera = async () => {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 9999 }, height: { ideal: 9999 } }, audio: false });
+      streamRef.current = s;
       setStream(s);
+      if (videoRef.current) {
+        videoRef.current.srcObject = s;
+        videoRef.current.play();
+      }
       setCameraOpen(true);
-      // Attach stream to video after state update
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = s;
-          videoRef.current.play();
-        }
-      }, 100);
-    } catch (err) {
-      // Fallback to file input if camera not available
+    } catch {
       galleryInputRef.current.click();
     }
   };
@@ -55,8 +61,9 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
   };
 
   const closeCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
       setStream(null);
     }
     setCameraOpen(false);
@@ -72,7 +79,7 @@ export default function PhotoUpload({ value, onChange, label = "Photo" }) {
       {/* Camera viewfinder */}
       {cameraOpen && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
-          <video ref={videoRef} autoPlay playsInline muted className="flex-1 w-full object-cover" />
+          <video ref={setVideoRef} autoPlay playsInline muted webkit-playsinline="true" className="flex-1 w-full object-cover" />
           <div className="flex items-center justify-around p-6 bg-black">
             <button type="button" onClick={closeCamera} className="text-white text-sm px-5 py-3">Cancel</button>
             <button

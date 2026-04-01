@@ -1,16 +1,25 @@
 import { useState, useRef } from 'react';
-import { Camera, ImagePlus, X, Loader2, Plus } from 'lucide-react';
+import { Camera, ImagePlus, X, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 export default function MultiPhotoUpload({ value = [], onChange, label = "Photos" }) {
   const [uploading, setUploading] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const galleryInputRef = useRef(null);
 
   const urls = Array.isArray(value) ? value : (value ? [value] : []);
+
+  const setVideoRef = (el) => {
+    videoRef.current = el;
+    if (el && streamRef.current) {
+      el.srcObject = streamRef.current;
+      el.play().catch(() => {});
+    }
+  };
 
   const uploadFile = async (file) => {
     setUploading(true);
@@ -28,15 +37,17 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
 
   const openCamera = async () => {
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 9999 }, height: { ideal: 9999 } }, audio: false });
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 9999 }, height: { ideal: 9999 } },
+        audio: false,
+      });
+      streamRef.current = s;
       setStream(s);
+      if (videoRef.current) {
+        videoRef.current.srcObject = s;
+        videoRef.current.play().catch(() => {});
+      }
       setCameraOpen(true);
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = s;
-          videoRef.current.play();
-        }
-      }, 100);
     } catch {
       galleryInputRef.current.click();
     }
@@ -56,8 +67,11 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
   };
 
   const closeCamera = () => {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    setStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+      setStream(null);
+    }
     setCameraOpen(false);
   };
 
@@ -72,7 +86,7 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
 
       {cameraOpen && (
         <div className="fixed inset-0 z-50 bg-black flex flex-col">
-          <video ref={videoRef} autoPlay playsInline muted className="flex-1 w-full object-cover" />
+          <video ref={setVideoRef} autoPlay playsInline muted webkit-playsinline="true" className="flex-1 w-full object-cover" />
           <div className="flex items-center justify-around p-6 bg-black">
             <button type="button" onClick={closeCamera} className="text-white text-sm px-5 py-3">Cancel</button>
             <button type="button" onClick={capturePhoto} className="w-16 h-16 rounded-full bg-white border-4 border-gray-300 flex items-center justify-center">
@@ -83,7 +97,6 @@ export default function MultiPhotoUpload({ value = [], onChange, label = "Photos
         </div>
       )}
 
-      {/* Existing photos */}
       {urls.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
           {urls.map((url, idx) => (
