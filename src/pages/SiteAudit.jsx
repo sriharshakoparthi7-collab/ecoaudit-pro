@@ -33,13 +33,18 @@ export default function SiteAudit() {
   }, [auditId]);
 
   const loadData = async () => {
-    const [auditData, zonesData] = await Promise.all([
-      base44.entities.Audit.filter({ id: auditId }),
-      base44.entities.Zone.filter({ audit_id: auditId }),
-    ]);
-    if (auditData.length) setAudit(auditData[0]);
-    setZones(zonesData);
-    setLoading(false);
+    try {
+      const [auditData, zonesData] = await Promise.all([
+        base44.entities.Audit.filter({ id: auditId }),
+        base44.entities.Zone.filter({ audit_id: auditId }),
+      ]);
+      if (auditData.length) setAudit(auditData[0]);
+      setZones(zonesData);
+    } catch (e) {
+      toast.error('Failed to load audit data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -97,12 +102,16 @@ export default function SiteAudit() {
   };
 
   const handleRefresh = async () => {
-    const [auditData, zonesData] = await Promise.all([
-      base44.entities.Audit.filter({ id: auditId }),
-      base44.entities.Zone.filter({ audit_id: auditId }),
-    ]);
-    if (auditData.length) setAudit(auditData[0]);
-    setZones(zonesData);
+    try {
+      const [auditData, zonesData] = await Promise.all([
+        base44.entities.Audit.filter({ id: auditId }),
+        base44.entities.Zone.filter({ audit_id: auditId }),
+      ]);
+      if (auditData.length) setAudit(auditData[0]);
+      setZones(zonesData);
+    } catch (e) {
+      toast.error('Refresh failed. Please try again.');
+    }
   };
 
   if (loading) {
