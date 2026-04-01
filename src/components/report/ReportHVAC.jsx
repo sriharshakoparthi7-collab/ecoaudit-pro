@@ -42,12 +42,14 @@ export default function ReportHVAC({ hvacs, zoneMap }) {
                 </div>
               </div>
 
-              {(unit.photo || unit.nameplate_photos || unit.extra_photos?.length > 0) && (
+              {(unit.photo || unit.nameplate_photos || unit.controller_photo || unit.indoor_unit_nameplate_photo || unit.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={unit.photo} label="HVAC Unit" />
                     <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
+                    <PhotoBox url={unit.controller_photo} label="Controller" />
+                    <PhotoBox url={unit.indoor_unit_nameplate_photo} label="Indoor Unit Nameplate" />
                     {(unit.extra_photos || []).map((url, i) => (
                       <PhotoBox key={i} url={url} label={`Extra Photo ${i + 1}`} />
                     ))}
