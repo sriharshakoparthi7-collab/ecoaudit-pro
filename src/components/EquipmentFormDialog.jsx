@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { EQUIPMENT_TYPES } from './EquipmentGrid';
 import {
   MainSwitchboardFields,
@@ -14,6 +15,15 @@ import {
   GeneralWaterFields,
   GeneralElectricityFields,
 } from './EquipmentFormFields';
+
+const REQUIRED_FIELDS = {
+  main_switchboard: [{ key: 'name', label: 'Name' }],
+  additional_switchboard: [{ key: 'name', label: 'Name' }],
+  hvac: [{ key: 'unit_name', label: 'Unit Name' }],
+  lighting: [{ key: 'light_type', label: 'Light Type' }],
+  forklift: [{ key: 'charger_type', label: 'Charger Type' }],
+  hotwater: [{ key: 'dhw_details_type', label: 'DHW Details/Type' }],
+};
 
 const FORM_MAP = {
   main_switchboard: MainSwitchboardFields,
@@ -36,6 +46,13 @@ export default function EquipmentFormDialog({ open, onClose, type, initialData, 
   if (!config || !FormComponent) return null;
 
   const handleSave = async () => {
+    const required = REQUIRED_FIELDS[type] || [];
+    for (const field of required) {
+      if (!data[field.key] || String(data[field.key]).trim() === '') {
+        toast.error(`"${field.label}" is required`);
+        return;
+      }
+    }
     setSaving(true);
     await onSave(data);
     setSaving(false);
