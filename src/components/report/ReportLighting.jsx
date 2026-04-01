@@ -42,11 +42,15 @@ export default function ReportLighting({ lights, zoneMap }) {
                 </div>
               </div>
 
-              {(light.photo || light.extra_photos?.length > 0) && (
+              {(light.photo || light.fixtures_photo || light.mounting_constraints_photo || light.sensors_photo || light.switchboard_photo_notes || light.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={light.photo} label="Fixture" />
+                    <PhotoBox url={light.fixtures_photo} label="Fixtures Installed" />
+                    <PhotoBox url={light.mounting_constraints_photo} label="Mounting / Access" />
+                    <PhotoBox url={light.sensors_photo} label="Switches / Sensors" />
+                    <PhotoBox url={light.switchboard_photo_notes} label="Switchboard" />
                     {(light.extra_photos || []).map((url, i) => (
                       <PhotoBox key={i} url={url} label={`Extra Photo ${i + 1}`} />
                     ))}
