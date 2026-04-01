@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Calendar, User, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, User, ChevronRight, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import moment from 'moment';
 
-export default function AuditCard({ audit }) {
+export default function AuditCard({ audit, onDelete }) {
   const isCompleted = audit.status === 'Completed';
+
+  const handleDelete = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onDelete(audit.id);
+  };
 
   return (
     <Link to={`/audit/${audit.id}`} className="block group">
@@ -19,12 +25,23 @@ export default function AuditCard({ audit }) {
               <span className="truncate">{audit.site_address}</span>
             </div>
           </div>
-          <Badge
-            variant={isCompleted ? 'default' : 'secondary'}
-            className={isCompleted ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/10' : ''}
-          >
-            {audit.status || 'Draft'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant={isCompleted ? 'default' : 'secondary'}
+              className={isCompleted ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/10' : ''}
+            >
+              {audit.status || 'Draft'}
+            </Badge>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 text-xs text-muted-foreground">

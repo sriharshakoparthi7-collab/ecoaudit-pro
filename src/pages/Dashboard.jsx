@@ -27,6 +27,11 @@ export default function Dashboard() {
     setAudits(data);
   };
 
+  const handleDelete = async (auditId) => {
+    setAudits(prev => prev.filter(a => a.id !== auditId));
+    await base44.entities.Audit.delete(auditId);
+  };
+
   const filtered = audits.filter(a =>
     a.site_name?.toLowerCase().includes(search.toLowerCase()) ||
     a.inspector_name?.toLowerCase().includes(search.toLowerCase())
@@ -88,7 +93,7 @@ export default function Dashboard() {
             All Audits ({filtered.length})
           </h2>
           {filtered.map(audit => (
-            <AuditCard key={audit.id} audit={audit} />
+            <AuditCard key={audit.id} audit={audit} onDelete={handleDelete} />
           ))}
         </div>
       )}
