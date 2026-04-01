@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Download, Loader2, Settings2 } from 'lucide-react';
@@ -59,8 +61,7 @@ export default function ClientReport() {
     setExportFilter(filtered);
     // Wait for re-render then capture
     await new Promise(r => setTimeout(r, 300));
-    const { default: jsPDF } = await import('jspdf');
-    const { default: html2canvas } = await import('html2canvas');
+
     const el = reportRef.current;
     const canvas = await html2canvas(el, {
       scale: 3,
