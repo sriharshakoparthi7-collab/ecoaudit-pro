@@ -346,8 +346,8 @@ export function PhotoBox({ url, label }) {
   const [failed, setFailed] = useState(false);
   if (!url || failed) return null;
   return (
-    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '320px' }}>
-      <img src={url} alt={label || 'Photo'} onError={() => setFailed(true)} style={{ width: '100%', height: '260px', objectFit: 'cover', display: 'block', border: 'none' }} />
+    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '340px' }}>
+      <img src={url} alt={label || 'Photo'} onError={() => setFailed(true)} style={{ width: '100%', height: 'auto', display: 'block', border: 'none' }} />
       {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
     </div>
   );
