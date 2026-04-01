@@ -26,7 +26,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Auditor Comments" value={msb.comments} />
               {(msb.photo || msb.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ marginTop: '12px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={msb.photo} label="Main Switchboard" />
                     {(msb.extra_photos || []).map((url, i) => (
@@ -60,7 +60,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
                     <col style={{ width: '40%' }} />
                     <col style={{ width: '15%' }} />
                   </colgroup>
-                <thead style={{ background: '#e8f0ef' }}>
+                <thead style={{ background: '#EEF3F8' }}>
                   <tr>
                     {['Board Name', 'Location / GPS', 'Type', 'Sub-Circuit Details', 'Zone'].map(h => (
                       <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: '10pt', fontWeight: 700, color: '#2C3E50', textTransform: 'uppercase', letterSpacing: '0.03em', wordBreak: 'break-word', whiteSpace: 'normal' }}>{h}</th>

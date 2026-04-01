@@ -17,8 +17,8 @@ export default function ReportLighting({ lights, zoneMap }) {
           {lights.map((light, i) => (
             <div key={light.id} className="bg-white rounded-xl p-6 shadow-sm card-block" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-1 h-5 rounded-full" style={{ background: '#1B4040' }} />
-                <h3 className="text-sm font-bold" style={{ color: '#1B4040' }}>
+                <div className="w-1 h-5 rounded-full" style={{ background: '#162A4E' }} />
+                <h3 className="text-sm font-bold" style={{ color: '#162A4E' }}>
                   Fixture {i + 1}: {light.light_type || 'Lighting System'}
                 </h3>
               </div>
@@ -44,7 +44,7 @@ export default function ReportLighting({ lights, zoneMap }) {
 
               {(light.photo || light.fixtures_photo || light.mounting_constraints_photo || light.sensors_photo || light.switchboard_photo_notes || light.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
-                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
+                  <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <PhotoBox url={light.photo} label="Fixture" />
                     <PhotoBox url={light.fixtures_photo} label="Fixtures Installed" />

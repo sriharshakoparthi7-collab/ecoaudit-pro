@@ -2,31 +2,31 @@ import moment from 'moment';
 
 export default function ReportHeader({ audit }) {
   return (
-    <div className="relative overflow-hidden" style={{ background: '#1B4040', minHeight: '260px' }}>
+    <div className="relative overflow-hidden" style={{ background: '#162A4E', minHeight: '260px' }}>
       {/* Decorative concentric arcs top-right */}
       <svg className="absolute top-0 right-0 opacity-10" width="300" height="300" viewBox="0 0 300 300">
         {[20, 50, 80, 110, 140, 170, 200].map((r, i) => (
-          <circle key={i} cx="300" cy="0" r={r} fill="none" stroke="#a0e0d0" strokeWidth="1" />
+          <circle key={i} cx="300" cy="0" r={r} fill="none" stroke="#79B44A" strokeWidth="1" />
         ))}
       </svg>
       {/* Decorative concentric arcs bottom-left */}
       <svg className="absolute bottom-0 left-0 opacity-10" width="220" height="220" viewBox="0 0 220 220">
         {[20, 50, 80, 110, 140, 170].map((r, i) => (
-          <circle key={i} cx="0" cy="220" r={r} fill="none" stroke="#a0e0d0" strokeWidth="1" />
+          <circle key={i} cx="0" cy="220" r={r} fill="none" stroke="#79B44A" strokeWidth="1" />
         ))}
       </svg>
 
       <div className="relative z-10 px-10 py-10">
         {/* Brand Name */}
         <div className="mb-8">
-          <p style={{ fontSize: '13pt', fontWeight: 800, letterSpacing: '0.18em', color: '#5fcfaf', textTransform: 'uppercase', margin: 0 }}>Sustainability Wise</p>
+          <p style={{ fontSize: '13pt', fontWeight: 800, letterSpacing: '0.18em', color: '#79B44A', textTransform: 'uppercase', margin: 0 }}>Sustainability Wise</p>
         </div>
 
         {/* Main Title */}
         <h1 className="text-3xl font-black uppercase tracking-wide mb-1" style={{ color: '#ffffff' }}>
           Comprehensive Site
         </h1>
-        <h1 className="text-3xl font-black uppercase tracking-wide mb-6" style={{ color: '#5fcfaf' }}>
+        <h1 className="text-3xl font-black uppercase tracking-wide mb-6" style={{ color: '#79B44A' }}>
           Energy Audit Report
         </h1>
 
@@ -45,7 +45,7 @@ export default function ReportHeader({ audit }) {
 function MetaBlock({ label, value }) {
   return (
     <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.07)' }}>
-      <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: '#7abcac' }}>{label}</p>
+      <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: '#79B44A' }}>{label}</p>
       <p className="text-sm font-semibold" style={{ color: '#ffffff' }}>{value || '—'}</p>
     </div>
   );

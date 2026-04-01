@@ -2,8 +2,8 @@ import { SectionTitle } from '../../pages/ClientReport';
 
 function ObservationBlock({ number, title, children }) {
   return (
-    <div style={{ borderRadius: '8px', borderLeft: '4px solid #1B4040', padding: '16px 20px', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-      <h4 style={{ fontSize: '12pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1B4040', marginBottom: '10px' }}>
+    <div style={{ borderRadius: '8px', borderLeft: '4px solid #162A4E', padding: '16px 20px', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+      <h4 style={{ fontSize: '12pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#162A4E', marginBottom: '10px' }}>
         {number}. {title}
       </h4>
       <div style={{ fontSize: '11pt', lineHeight: 1.6, color: '#333333' }}>
@@ -26,7 +26,7 @@ function Bullet({ label, value }) {
 function BulletPoint({ children }) {
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-      <span style={{ flexShrink: 0, color: '#1B4040', fontWeight: 700, marginTop: '1px' }}>⚡</span>
+      <span style={{ flexShrink: 0, color: '#79B44A', fontWeight: 700, marginTop: '1px' }}>⚡</span>
       <span style={{ flex: 1, color: '#333333' }}>{children}</span>
     </div>
   );
@@ -131,9 +131,9 @@ export default function ReportObservations({ lights, solars, forklifts, hotWater
         </ObservationBlock>
       </div>
 
-      <div className="mt-8 rounded-xl p-6 text-center" style={{ background: '#1B4040' }}>
+      <div className="mt-8 rounded-xl p-6 text-center" style={{ background: '#162A4E' }}>
         <p className="text-sm font-bold text-white uppercase tracking-widest mb-1">— End of Report —</p>
-        <p className="text-xs" style={{ color: '#7abcac' }}>
+        <p className="text-xs" style={{ color: '#b8d49a' }}>
           This document is confidential and prepared exclusively for the named client by Sustainability Wise.
         </p>
       </div>

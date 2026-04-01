@@ -100,10 +100,10 @@ export default function ClientReport() {
 
     const drawHeader = () => {
       // Header background
-      pdf.setFillColor(27, 64, 64);
+      pdf.setFillColor(22, 42, 78);
       pdf.rect(borderInset, borderInset, pdfW - borderInset * 2, headerH, 'F');
       // Left: company
-      pdf.setTextColor(160, 220, 200);
+      pdf.setTextColor(121, 180, 74);
       pdf.setFontSize(7.5);
       pdf.setFont('helvetica', 'bold');
       pdf.text('SUSTAINABILITY WISE', marginX, borderInset + 7.5);
@@ -112,7 +112,7 @@ export default function ClientReport() {
       pdf.setTextColor(255, 255, 255);
       pdf.text(`${siteName} — Energy Audit Report`, pdfW / 2, borderInset + 7.5, { align: 'center' });
       // Right: date
-      pdf.setTextColor(160, 220, 200);
+      pdf.setTextColor(121, 180, 74);
       pdf.text(auditDate, pdfW - marginX, borderInset + 7.5, { align: 'right' });
     };
 
@@ -123,7 +123,7 @@ export default function ClientReport() {
       pdf.setLineWidth(0.3);
       pdf.line(marginX, footerY + 2, pdfW - marginX, footerY + 2);
       // Left text
-      pdf.setTextColor(100, 130, 120);
+      pdf.setTextColor(90, 110, 150);
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
       pdf.text('Sustainability Wise — Confidential Energy Audit Report', marginX, footerY + 8);
@@ -303,7 +303,7 @@ export default function ClientReport() {
       />
 
         {/* Footer */}
-        <div className="px-10 py-5 text-center text-xs" style={{ background: '#1B4040', color: '#a0c4c4' }}>
+        <div className="px-10 py-5 text-center text-xs" style={{ background: '#162A4E', color: '#b8d49a' }}>
           Prepared by Sustainability Wise &nbsp;|&nbsp; Confidential Energy Audit Report &nbsp;|&nbsp;{' '}
           {moment().format('MMMM YYYY')} &nbsp;|&nbsp; {audit.site_name}
         </div>
@@ -315,14 +315,14 @@ export default function ClientReport() {
 export function SectionTitle({ number, title, plain }) {
   if (plain) {
     return (
-      <h2 className="keep-with-next" style={{ fontSize: '18pt', fontWeight: 800, color: '#2C3E50', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+      <h2 className="keep-with-next" style={{ fontSize: '18pt', fontWeight: 800, color: '#162A4E', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '16px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
         {number}
       </h2>
     );
   }
   return (
-    <div className="keep-with-next" style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #1B4040', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
-      <span style={{ fontSize: '20pt', fontWeight: 800, color: '#1B4040' }}>{number}.</span>
+    <div className="keep-with-next" style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #162A4E', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+      <span style={{ fontSize: '20pt', fontWeight: 800, color: '#162A4E' }}>{number}.</span>
       <h2 style={{ fontSize: '18pt', fontWeight: 700, color: '#2C3E50', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>{title}</h2>
     </div>
   );
@@ -330,8 +330,8 @@ export function SectionTitle({ number, title, plain }) {
 
 export function InfoBox({ label, value }) {
   return (
-    <div style={{ borderRadius: '8px', padding: '12px', background: '#EAF0EF' }}>
-      <p style={{ fontSize: '9pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px', color: '#1B4040' }}>{label}</p>
+    <div style={{ borderRadius: '8px', padding: '12px', background: '#EEF3F8' }}>
+      <p style={{ fontSize: '9pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px', color: '#162A4E' }}>{label}</p>
       <p style={{ fontSize: '11pt', fontWeight: 600, color: '#2C3E50' }}>{value || '—'}</p>
     </div>
   );
@@ -340,7 +340,7 @@ export function InfoBox({ label, value }) {
 export function FieldRow({ label, value }) {
   return (
     <div style={{ display: 'flex', gap: '8px', padding: '6px 0', borderBottom: '1px solid #F0F0F0' }}>
-      <span style={{ fontSize: '10pt', fontWeight: 600, width: '180px', flexShrink: 0, color: '#2C3E50' }}>{label}</span>
+      <span style={{ fontSize: '10pt', fontWeight: 600, width: '180px', flexShrink: 0, color: '#162A4E' }}>{label}</span>
       <span style={{ fontSize: '10pt', color: '#333333', wordBreak: 'break-word', flex: 1 }}>{value ?? '—'}</span>
     </div>
   );
@@ -359,7 +359,7 @@ export function PhotoBox({ url, label }) {
 
 export function SubSectionTitle({ title }) {
   return (
-    <h3 className="keep-with-next" style={{ fontSize: '13pt', fontWeight: 600, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', paddingBottom: '4px', borderBottom: '1px solid #DDDDDD', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+    <h3 className="keep-with-next" style={{ fontSize: '13pt', fontWeight: 600, color: '#162A4E', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px', paddingBottom: '4px', borderBottom: '1px solid #79B44A', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
       {title}
     </h3>
   );
