@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import JSZip from 'jszip';
 import { useParams, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, CheckSquare, Square, FileText, Image, Eye, Images } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, FileText, Image, Eye, Images, FolderDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ReportHeader from '../components/report/ReportHeader';
@@ -109,8 +110,8 @@ export default function PhotoPreview() {
       eqMap[type] = items;
       for (const item of items) {
         const photos = extractPhotos(item);
-        if (photos.length > 0) {
-          newGroups.push({ type, label: EQUIPMENT_LABELS[type], itemName: getItemName(type, item), itemId: item.id, photos });
+          if (photos.length > 0) {
+          newGroups.push({ type, label: EQUIPMENT_LABELS[type], itemName: getItemName(type, item), itemId: item.id, zoneId: item.zone_id, photos });
         }
       }
     }
@@ -128,6 +129,63 @@ export default function PhotoPreview() {
     });
     setGroups(newGroups);
     setLoading(false);
+  };
+
+  const [downloadingImages, setDownloadingImages] = useState(false);
+
+  const downloadImagesAsZip = async () => {
+    setDownloadingImages(true);
+    const zip = new JSZip();
+    const siteName = rawData?.audit?.site_name || 'Audit';
+    const zoneMap = rawData?.zoneMap || {};
+
+    // Group included photos by zone
+    const zoneGroups = {};
+    for (const group of groups) {
+      if (group.photos.every(p => excluded.has(p.url))) continue;
+      const zoneName = (zoneMap[group.zoneId] || 'General').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || 'General';
+      if (!zoneGroups[zoneName]) zoneGroups[zoneName] = [];
+      for (const photo of group.photos) {
+        if (!excluded.has(photo.url)) {
+          zoneGroups[zoneName].push({ ...photo, equipLabel: group.label, itemName: group.itemName });
+        }
+      }
+    }
+
+    // Fetch and convert each image to PNG via canvas
+    const toPNG = (url) => new Promise((resolve) => {
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        canvas.toBlob(blob => resolve(blob), 'image/png');
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+
+    for (const [zoneName, photos] of Object.entries(zoneGroups)) {
+      const folder = zip.folder(zoneName);
+      const counters = {};
+      for (const photo of photos) {
+        const baseName = `${photo.equipLabel}-${photo.itemName}-${photo.label}`.replace(/[^a-zA-Z0-9 _-]/g, '_');
+        counters[baseName] = (counters[baseName] || 0) + 1;
+        const fileName = `${baseName}${counters[baseName] > 1 ? `_${counters[baseName]}` : ''}.png`;
+        const blob = await toPNG(photo.url);
+        if (blob) folder.file(fileName, blob);
+      }
+    }
+
+    const content = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `${siteName.replace(/\s+/g, '-')}-Audit-Images.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setDownloadingImages(false);
   };
 
   const togglePhoto = (url) => {
@@ -190,10 +248,16 @@ export default function PhotoPreview() {
           <ArrowLeft className="w-4 h-4" />
           Back to Report
         </button>
+        <div className="flex items-center gap-2">
+        <Button variant="outline" onClick={downloadImagesAsZip} disabled={downloadingImages || selectedCount === 0}>
+          {downloadingImages ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <FolderDown className="w-4 h-4 mr-1.5" />}
+          {downloadingImages ? 'Preparing...' : 'Download Images'}
+        </Button>
         <Button onClick={handleGenerate}>
           <FileText className="w-4 h-4 mr-1.5" />
           Download Report ({selectedCount} photos)
         </Button>
+        </div>
       </div>
 
       {/* Tabs */}
