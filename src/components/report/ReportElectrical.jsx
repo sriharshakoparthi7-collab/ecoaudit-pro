@@ -27,7 +27,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               {(msb.photo || msb.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ marginTop: '12px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <PhotoBox url={msb.photo} label="Main Switchboard" />
                     {(msb.extra_photos || []).map((url, i) => (
                       <PhotoBox key={i} url={url} label={`Extra Photo ${i + 1}`} />
@@ -54,27 +54,27 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
             <div className="overflow-x-auto rounded-lg border border-gray-100 mb-4">
               <table className="w-full text-xs">
                 <colgroup>
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '15%' }} />
-                    <col style={{ width: '40%' }} />
-                    <col style={{ width: '15%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '14%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '48%' }} />
+                    <col style={{ width: '12%' }} />
                   </colgroup>
                 <thead style={{ background: '#EEF3F8' }}>
                   <tr>
                     {['Board Name', 'Location / GPS', 'Type', 'Sub-Circuit Details', 'Zone'].map(h => (
-                      <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: '10pt', fontWeight: 700, color: '#2C3E50', textTransform: 'uppercase', letterSpacing: '0.03em', wordBreak: 'break-word', whiteSpace: 'normal' }}>{h}</th>
+                      <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: '9pt', fontWeight: 700, color: '#2C3E50', textTransform: 'uppercase', letterSpacing: '0.03em', wordBreak: 'break-word', whiteSpace: 'normal' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {additionals.map((sb, i) => (
-                    <tr key={sb.id} style={{ background: i % 2 === 0 ? '#ffffff' : '#f9f9f9' }}>
-                      <td style={{ padding: '7px 10px', fontSize: '10pt', fontWeight: 500, wordBreak: 'break-word', whiteSpace: 'normal' }}>{sb.name || '—'}</td>
-                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{[sb.location, sb.map_locator].filter(Boolean).join(' / ') || '—'}</td>
-                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{sb.type || '—'}</td>
-                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{sb.sub_circuits_description || '—'}</td>
-                      <td style={{ padding: '7px 10px', fontSize: '10pt', wordBreak: 'break-word', whiteSpace: 'normal' }}>{zoneMap[sb.zone_id] || '—'}</td>
+                    <tr key={sb.id} style={{ background: i % 2 === 0 ? '#ffffff' : '#f9f9f9', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                      <td style={{ padding: '6px 8px', fontSize: '9pt', fontWeight: 500, wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', whiteSpace: 'normal' }}>{sb.name || '—'}</td>
+                      <td style={{ padding: '6px 8px', fontSize: '9pt', wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', whiteSpace: 'normal' }}>{[sb.location, sb.map_locator].filter(Boolean).join(' / ') || '—'}</td>
+                      <td style={{ padding: '6px 8px', fontSize: '9pt', wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal' }}>{sb.type || '—'}</td>
+                      <td style={{ padding: '6px 8px', fontSize: '9pt', wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', whiteSpace: 'normal' }}>{sb.sub_circuits_description || '—'}</td>
+                      <td style={{ padding: '6px 8px', fontSize: '9pt', wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal' }}>{zoneMap[sb.zone_id] || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -83,7 +83,7 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
             {additionals.some(sb => sb.photo || sb.extra_photos?.length > 0) && (
               <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '12px' }}>
                 <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#1B4040', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   {additionals.filter(sb => sb.photo).map(sb => (
                     <PhotoBox key={sb.id} url={sb.photo} label={sb.name || 'Switchboard'} />
                   ))}

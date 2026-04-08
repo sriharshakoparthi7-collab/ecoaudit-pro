@@ -2,11 +2,11 @@ import { SectionTitle } from '../../pages/ClientReport';
 
 function ObservationBlock({ number, title, children }) {
   return (
-    <div style={{ borderRadius: '8px', borderLeft: '4px solid #162A4E', padding: '16px 20px', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-      <h4 style={{ fontSize: '12pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#162A4E', marginBottom: '10px' }}>
+    <div className="obs-block" style={{ borderRadius: '8px', borderLeft: '4px solid #162A4E', padding: '12px 16px', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+      <h4 style={{ fontSize: '11pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#162A4E', marginBottom: '8px' }}>
         {number}. {title}
       </h4>
-      <div style={{ fontSize: '11pt', lineHeight: 1.6, color: '#333333' }}>
+      <div style={{ fontSize: '10pt', lineHeight: 1.5, color: '#333333' }}>
         {children}
       </div>
     </div>
@@ -25,9 +25,9 @@ function Bullet({ label, value }) {
 
 function BulletPoint({ children }) {
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', marginBottom: '3px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
       <span style={{ flexShrink: 0, color: '#79B44A', fontWeight: 700, marginTop: '1px' }}>⚡</span>
-      <span style={{ flex: 1, color: '#333333' }}>{children}</span>
+      <span style={{ flex: 1, color: '#333333', fontSize: '10pt', lineHeight: 1.5 }}>{children}</span>
     </div>
   );
 }

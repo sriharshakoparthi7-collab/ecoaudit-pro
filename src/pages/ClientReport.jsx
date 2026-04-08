@@ -79,20 +79,21 @@ export default function ClientReport() {
     const pxToMm = contentW / el.clientWidth;
     const pageHpx = contentH / pxToMm;
 
-    // Insert spacers to prevent card-block elements from straddling page cuts
+    // Insert spacers to prevent content from straddling page cuts
     const spacers = [];
-    const cards = el.querySelectorAll('.card-block');
-    cards.forEach(card => {
-      const cardTop = card.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop;
+    // Process card blocks, observation blocks, photo evidence, and table rows
+    const breakTargets = el.querySelectorAll('.card-block, .obs-block, .photo-evidence, .field-row, tr');
+    const elRect = el.getBoundingClientRect();
+    breakTargets.forEach(card => {
+      const cardTop = card.getBoundingClientRect().top - elRect.top + el.scrollTop;
       const cardH = card.offsetHeight;
       const cardBottom = cardTop + cardH;
       const pageAtStart = Math.floor(cardTop / pageHpx);
       const pageAtEnd = Math.floor((cardBottom - 1) / pageHpx);
-      if (pageAtStart !== pageAtEnd && cardH < pageHpx * 0.9) {
-        // Push card to next page by inserting a spacer
+      if (pageAtStart !== pageAtEnd && cardH < pageHpx * 0.85) {
         const remaining = pageHpx - (cardTop % pageHpx);
         const spacer = document.createElement('div');
-        spacer.style.height = `${remaining + 8}px`;
+        spacer.style.height = `${remaining + 4}px`;
         spacer.dataset.pdfSpacer = '1';
         card.parentNode.insertBefore(spacer, card);
         spacers.push(spacer);
@@ -223,19 +224,21 @@ export default function ClientReport() {
         .report-body, .report-body * { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif !important; }
         .report-body { background: #f7f8f8; }
         .report-content { padding: 1.8cm; }
-        .report-body p, .report-body td, .report-body li { font-size: 10pt; color: #333333; line-height: 1.6; }
+        .report-body p, .report-body td, .report-body li { font-size: 10pt; color: #333333; line-height: 1.5; }
         .report-body table { width: 100%; table-layout: fixed; border-collapse: collapse; }
-        .report-body td, .report-body th { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; padding: 7px 10px; font-size: 10pt; }
-        .report-body th { font-size: 10pt; font-weight: 700; background: #f4f4f4 !important; color: #2C3E50; }
+        .report-body td, .report-body th { word-wrap: break-word; overflow-wrap: break-word; hyphens: auto; white-space: normal; padding: 6px 8px; font-size: 9pt; }
+        .report-body th { font-size: 9pt; font-weight: 700; background: #f4f4f4 !important; color: #2C3E50; }
         .report-body img { max-width: 100%; border: 1px solid #DDDDDD; border-radius: 6px; }
         .avoid-break { page-break-inside: avoid; break-inside: avoid; }
         .page-break { page-break-before: always; break-before: always; }
         .keep-with-next { page-break-after: avoid; break-after: avoid; }
         .section-block { page-break-inside: avoid; break-inside: avoid; }
-        .report-body p, .report-body li { orphans: 2; widows: 2; }
+        .report-body p, .report-body li { orphans: 3; widows: 3; }
         .report-body tr { page-break-inside: avoid; break-inside: avoid; }
         .report-body .card-block { page-break-inside: avoid; break-inside: avoid; }
         .report-body .photo-evidence { page-break-inside: avoid; break-inside: avoid; }
+        .report-body .obs-block { page-break-inside: avoid; break-inside: avoid; }
+        .report-body .field-row { page-break-inside: avoid; break-inside: avoid; }
         .report-content { padding-bottom: 3cm; }
         @media print {
           .no-print { display: none !important; }
@@ -356,9 +359,9 @@ export function InfoBox({ label, value }) {
 
 export function FieldRow({ label, value }) {
   return (
-    <div style={{ display: 'flex', gap: '8px', padding: '6px 0', borderBottom: '1px solid #F0F0F0' }}>
-      <span style={{ fontSize: '10pt', fontWeight: 600, width: '180px', flexShrink: 0, color: '#162A4E' }}>{label}</span>
-      <span style={{ fontSize: '10pt', color: '#333333', wordBreak: 'break-word', flex: 1 }}>{value ?? '—'}</span>
+    <div className="field-row" style={{ display: 'flex', gap: '8px', padding: '5px 0', borderBottom: '1px solid #F0F0F0', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+      <span style={{ fontSize: '9pt', fontWeight: 600, width: '160px', flexShrink: 0, color: '#162A4E' }}>{label}</span>
+      <span style={{ fontSize: '9pt', color: '#333333', wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', flex: 1 }}>{value ?? '—'}</span>
     </div>
   );
 }
