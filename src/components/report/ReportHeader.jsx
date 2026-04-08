@@ -17,9 +17,13 @@ export default function ReportHeader({ audit }) {
       </svg>
 
       <div className="relative z-10 px-10 py-10">
-        {/* Brand Name */}
+        {/* Brand Logo */}
         <div className="mb-8">
-          <p style={{ fontSize: '13pt', fontWeight: 800, letterSpacing: '0.18em', color: '#79B44A', textTransform: 'uppercase', margin: 0 }}>Sustainability Wise</p>
+          <img
+            src="https://media.base44.com/images/public/69c364356b11e052afca1916/c36ce9f79_Untitleddesign3.png"
+            alt="Sustainability Wise"
+            style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+          />
         </div>
 
         {/* Main Title */}
