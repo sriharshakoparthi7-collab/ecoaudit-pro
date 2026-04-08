@@ -36,7 +36,7 @@ export default function ReportSolar({ solars, zoneMap }) {
               {(pv.roof_photo || pv.inverter_label_photo || pv.electricity_meter_photo || pv.additional_solar_space_photo || pv.switchboard_photo || pv.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <PhotoBox url={pv.roof_photo} label="Roof / Panels" />
                     <PhotoBox url={pv.inverter_label_photo} label="Inverter Label" />
                     <PhotoBox url={pv.electricity_meter_photo} label="Electricity Meter" />

@@ -45,7 +45,7 @@ export default function ReportLighting({ lights, zoneMap }) {
               {(light.photo || light.fixtures_photo || light.mounting_constraints_photo || light.sensors_photo || light.switchboard_photo_notes || light.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <PhotoBox url={light.photo} label="Fixture" />
                     <PhotoBox url={light.fixtures_photo} label="Fixtures Installed" />
                     <PhotoBox url={light.mounting_constraints_photo} label="Mounting / Access" />

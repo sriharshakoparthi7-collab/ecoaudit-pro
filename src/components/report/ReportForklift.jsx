@@ -49,7 +49,7 @@ export default function ReportForklift({ forklifts, zoneMap }) {
               {(fc.charger_photo || fc.charger_label_photo || fc.electric_connection_photo || fc.charger_space_photo || fc.socket_connection_photo || fc.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <PhotoBox url={fc.charger_photo} label="Forklift Charger" />
                     <PhotoBox url={fc.charger_label_photo} label="Charger Label" />
                     <PhotoBox url={fc.electric_connection_photo} label="Electric Connection" />

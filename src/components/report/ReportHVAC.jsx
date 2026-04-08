@@ -45,7 +45,7 @@ export default function ReportHVAC({ hvacs, zoneMap }) {
               {(unit.photo || unit.nameplate_photos || unit.controller_photo || unit.indoor_unit_nameplate_photo || unit.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <PhotoBox url={unit.photo} label="HVAC Unit" />
                     <PhotoBox url={unit.nameplate_photos} label="Nameplate" />
                     <PhotoBox url={unit.controller_photo} label="Controller" />

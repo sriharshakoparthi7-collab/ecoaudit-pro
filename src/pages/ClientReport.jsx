@@ -46,7 +46,6 @@ export default function ClientReport() {
 
   const exportPDF = async (config) => {
     setExporting(true);
-    // Build filtered data based on config
     const filtered = config ? {
       ...baseData,
       hvacs: config.sections.has('hvac') ? (baseData.hvacs.filter(i => config.items.hvac?.has(i.id) ?? true)) : [],
@@ -59,10 +58,50 @@ export default function ClientReport() {
       _showObservations: config.sections.has('observations'),
     } : baseData;
     setExportFilter(filtered);
-    // Wait for re-render then capture
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 400));
 
     const el = reportRef.current;
+
+    // --- Smart page break insertion ---
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const borderInset = 8;
+    const headerH = 12;
+    const footerH = 12;
+    const marginX = borderInset + 2;
+    const contentTop = borderInset + headerH + 3;
+    const contentBottom = pdfH - borderInset - footerH - 3;
+    const contentW = pdfW - marginX * 2;
+    const contentH = contentBottom - contentTop;
+
+    // px → mm scale based on rendered element width
+    const pxToMm = contentW / el.clientWidth;
+    const pageHpx = contentH / pxToMm;
+
+    // Insert spacers to prevent card-block elements from straddling page cuts
+    const spacers = [];
+    const cards = el.querySelectorAll('.card-block');
+    cards.forEach(card => {
+      const cardTop = card.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop;
+      const cardH = card.offsetHeight;
+      const cardBottom = cardTop + cardH;
+      const pageAtStart = Math.floor(cardTop / pageHpx);
+      const pageAtEnd = Math.floor((cardBottom - 1) / pageHpx);
+      if (pageAtStart !== pageAtEnd && cardH < pageHpx * 0.9) {
+        // Push card to next page by inserting a spacer
+        const remaining = pageHpx - (cardTop % pageHpx);
+        const spacer = document.createElement('div');
+        spacer.style.height = `${remaining + 8}px`;
+        spacer.dataset.pdfSpacer = '1';
+        card.parentNode.insertBefore(spacer, card);
+        spacers.push(spacer);
+      }
+    });
+
+    // Wait for reflow after spacer insertion
+    await new Promise(r => setTimeout(r, 300));
+
     const canvas = await html2canvas(el, {
       scale: 3,
       useCORS: true,
@@ -71,25 +110,14 @@ export default function ClientReport() {
       logging: false,
     });
 
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pdfW = pdf.internal.pageSize.getWidth();   // 210mm
-    const pdfH = pdf.internal.pageSize.getHeight();  // 297mm
-
-    const borderInset = 8;       // mm from edge
-    const headerH = 12;          // mm — header band height
-    const footerH = 12;          // mm — footer band height
-    const marginX = borderInset + 2; // content left/right margin
-    const contentTop = borderInset + headerH + 3;  // content starts here
-    const contentBottom = pdfH - borderInset - footerH - 3;
-    const contentW = pdfW - marginX * 2;
-    const contentH = contentBottom - contentTop;   // usable height per page
+    // Remove spacers
+    spacers.forEach(s => s.remove());
 
     const siteName = data?.audit?.site_name || 'Energy Audit';
     const auditDate = data?.audit?.audit_date
       ? new Date(data.audit.audit_date).toLocaleDateString('en-AU', { day: '2-digit', month: 'long', year: 'numeric' })
       : '';
 
-    // Total rendered image height in mm
     const totalImgH = (canvas.height * contentW) / canvas.width;
     const totalPages = Math.ceil(totalImgH / contentH);
 
@@ -100,45 +128,35 @@ export default function ClientReport() {
     };
 
     const drawHeader = () => {
-      // Header background
       pdf.setFillColor(22, 42, 78);
       pdf.rect(borderInset, borderInset, pdfW - borderInset * 2, headerH, 'F');
-      // Left: company
       pdf.setTextColor(121, 180, 74);
       pdf.setFontSize(7.5);
       pdf.setFont('helvetica', 'bold');
       pdf.text('SUSTAINABILITY WISE', marginX, borderInset + 7.5);
-      // Centre: report title
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(255, 255, 255);
       pdf.text(`${siteName} — Energy Audit Report`, pdfW / 2, borderInset + 7.5, { align: 'center' });
-      // Right: date
       pdf.setTextColor(121, 180, 74);
       pdf.text(auditDate, pdfW - marginX, borderInset + 7.5, { align: 'right' });
     };
 
     const drawFooter = (pageNum) => {
       const footerY = pdfH - borderInset - footerH;
-      // Divider line
       pdf.setDrawColor(200, 215, 210);
       pdf.setLineWidth(0.3);
       pdf.line(marginX, footerY + 2, pdfW - marginX, footerY + 2);
-      // Left text
       pdf.setTextColor(90, 110, 150);
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
       pdf.text('Sustainability Wise — Confidential Energy Audit Report', marginX, footerY + 8);
-      // Right: page number
       pdf.text(`Page ${pageNum} of ${totalPages}`, pdfW - marginX, footerY + 8, { align: 'right' });
     };
 
     for (let p = 0; p < totalPages; p++) {
       if (p > 0) pdf.addPage();
-
-      // Slice this page's portion of the canvas
       const srcYPx = (p * contentH * canvas.width) / contentW;
       const srcHPx = Math.min((contentH * canvas.width) / contentW, canvas.height - srcYPx);
-
       const sliceCanvas = document.createElement('canvas');
       sliceCanvas.width = canvas.width;
       sliceCanvas.height = Math.ceil(srcHPx);
@@ -146,9 +164,7 @@ export default function ClientReport() {
       ctx.drawImage(canvas, 0, -Math.floor(srcYPx));
       const sliceData = sliceCanvas.toDataURL('image/jpeg', 1.0);
       const sliceH = (sliceCanvas.height * contentW) / canvas.width;
-
       pdf.addImage(sliceData, 'JPEG', marginX, contentTop, contentW, sliceH);
-
       drawBorder();
       drawHeader();
       drawFooter(p + 1);
@@ -206,8 +222,8 @@ export default function ClientReport() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
         .report-body, .report-body * { font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif !important; }
         .report-body { background: #f7f8f8; }
-        .report-content { padding: 2.54cm; }
-        .report-body p, .report-body td, .report-body li { font-size: 11pt; color: #333333; line-height: 1.6; }
+        .report-content { padding: 1.8cm; }
+        .report-body p, .report-body td, .report-body li { font-size: 10pt; color: #333333; line-height: 1.6; }
         .report-body table { width: 100%; table-layout: fixed; border-collapse: collapse; }
         .report-body td, .report-body th { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; padding: 7px 10px; font-size: 10pt; }
         .report-body th { font-size: 10pt; font-weight: 700; background: #f4f4f4 !important; color: #2C3E50; }
@@ -348,10 +364,10 @@ export function FieldRow({ label, value }) {
 }
 
 export function PhotoBox({ url, label }) {
-  const [failed, setFailed] = useState(false);
-  if (!url || failed) return null;
-  return (
-    <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '45%', maxWidth: '340px' }}>
+const [failed, setFailed] = useState(false);
+if (!url || failed) return null;
+return (
+  <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #DDDDDD', width: '35%', maxWidth: '280px' }}>
       <img src={url} alt={label || 'Photo'} onError={() => setFailed(true)} style={{ width: '100%', height: 'auto', display: 'block', border: 'none' }} />
       {label && <p style={{ fontSize: '9pt', textAlign: 'center', padding: '4px', color: '#666', background: '#fafafa' }}>{label}</p>}
     </div>
