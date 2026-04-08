@@ -20,7 +20,7 @@ export default function ReportHeader({ audit }) {
         {/* Brand Logo */}
         <div className="mb-8">
           <img
-            src="https://media.base44.com/images/public/69c364356b11e052afca1916/c36ce9f79_Untitleddesign3.png"
+            src="https://media.base44.com/images/public/69c364356b11e052afca1916/16cba9b3c_Gemini_Generated_Image_okf8wuokf8wuokf8.png"
             alt="Sustainability Wise"
             style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '6px 10px' }}
           />
