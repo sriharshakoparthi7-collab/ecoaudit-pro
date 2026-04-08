@@ -22,7 +22,7 @@ export default function ReportHeader({ audit }) {
           <img
             src="https://media.base44.com/images/public/69c364356b11e052afca1916/c36ce9f79_Untitleddesign3.png"
             alt="Sustainability Wise"
-            style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+            style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain', background: 'white', borderRadius: '8px', padding: '6px 10px' }}
           />
         </div>
 
