@@ -3,10 +3,15 @@ import { SectionTitle } from '../../pages/ClientReport';
 export default function ReportObservations({ extraNotes = {} }) {
   // Collect all observation fields that have content
   const observations = [
+    { key: 'obs_msb', section: 'Main Switchboard' },
+    { key: 'obs_asb', section: 'Additional Switchboards' },
+    { key: 'obs_hvac', section: 'HVAC Units' },
     { key: 'obs_lighting', section: 'Lighting Upgrades' },
     { key: 'obs_solar', section: 'Solar PV Optimization' },
-    { key: 'obs_forklift', section: 'Load Shifting — Forklift Charging' },
-    { key: 'obs_hotwater', section: 'Hot Water Efficiency' },
+    { key: 'obs_forklift', section: 'Forklift Charging' },
+    { key: 'obs_hotwater', section: 'Hot Water Systems' },
+    { key: 'obs_general_water', section: 'General Water' },
+    { key: 'obs_general_electricity', section: 'General Electricity' },
   ].filter(obs => extraNotes[obs.key]?.trim());
 
   // If no observations, don't render section 7 at all

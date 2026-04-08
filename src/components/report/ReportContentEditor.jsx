@@ -3,10 +3,15 @@ import { useState } from 'react';
 
 const SECTIONS = [
   { key: 'execSummary', label: 'Executive Summary', placeholder: 'Enter a custom executive summary paragraph...' },
-  { key: 'obs_lighting', label: '7.1 Lighting Upgrades', placeholder: 'Enter observations for lighting equipment (optional — only appears if content is added)' },
-  { key: 'obs_solar', label: '7.2 Solar PV', placeholder: 'Enter observations for solar PV equipment (optional — only appears if content is added)' },
-  { key: 'obs_forklift', label: '7.3 Forklift Charging', placeholder: 'Enter observations for forklift charger equipment (optional — only appears if content is added)' },
-  { key: 'obs_hotwater', label: '7.4 Hot Water Systems', placeholder: 'Enter observations for hot water equipment (optional — only appears if content is added)' },
+  { key: 'obs_msb', label: 'Obs: Main Switchboard', placeholder: 'Enter observations for main switchboard (optional — only appears if content is added)' },
+  { key: 'obs_asb', label: 'Obs: Additional Switchboards', placeholder: 'Enter observations for additional switchboards (optional — only appears if content is added)' },
+  { key: 'obs_hvac', label: 'Obs: HVAC Units', placeholder: 'Enter observations for HVAC equipment (optional — only appears if content is added)' },
+  { key: 'obs_lighting', label: 'Obs: Lighting Upgrades', placeholder: 'Enter observations for lighting equipment (optional — only appears if content is added)' },
+  { key: 'obs_solar', label: 'Obs: Solar PV', placeholder: 'Enter observations for solar PV equipment (optional — only appears if content is added)' },
+  { key: 'obs_forklift', label: 'Obs: Forklift Charging', placeholder: 'Enter observations for forklift charger equipment (optional — only appears if content is added)' },
+  { key: 'obs_hotwater', label: 'Obs: Hot Water Systems', placeholder: 'Enter observations for hot water equipment (optional — only appears if content is added)' },
+  { key: 'obs_general_water', label: 'Obs: General Water', placeholder: 'Enter observations for general water systems (optional — only appears if content is added)' },
+  { key: 'obs_general_electricity', label: 'Obs: General Electricity', placeholder: 'Enter observations for general electricity (optional — only appears if content is added)' },
 ];
 
 export default function ReportContentEditor({ content, onChange }) {
