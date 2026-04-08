@@ -1,134 +1,55 @@
 import { SectionTitle } from '../../pages/ClientReport';
 
-function ObservationBlock({ number, title, children }) {
-  return (
-    <div className="obs-block" style={{ borderRadius: '8px', borderLeft: '4px solid #162A4E', padding: '12px 16px', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-      <h4 style={{ fontSize: '11pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#162A4E', marginBottom: '8px' }}>
-        {number}. {title}
-      </h4>
-      <div style={{ fontSize: '10pt', lineHeight: 1.5, color: '#333333' }}>
-        {children}
-      </div>
-    </div>
-  );
-}
+export default function ReportObservations({ extraNotes = {} }) {
+  // Collect all observation fields that have content
+  const observations = [
+    { key: 'obs_lighting', section: 'Lighting Upgrades' },
+    { key: 'obs_solar', section: 'Solar PV Optimization' },
+    { key: 'obs_forklift', section: 'Load Shifting — Forklift Charging' },
+    { key: 'obs_hotwater', section: 'Hot Water Efficiency' },
+  ].filter(obs => extraNotes[obs.key]?.trim());
 
-function Bullet({ label, value }) {
-  if (!value) return null;
-  return (
-    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', marginBottom: '4px' }}>
-      <span style={{ fontWeight: 600, color: '#2C3E50', flexShrink: 0 }}>{label}:</span>
-      <span style={{ color: '#333333' }}>{value}</span>
-    </div>
-  );
-}
-
-function BulletPoint({ children }) {
-  return (
-    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', marginBottom: '3px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-      <span style={{ flexShrink: 0, color: '#79B44A', fontWeight: 700, marginTop: '1px' }}>⚡</span>
-      <span style={{ flex: 1, color: '#333333', fontSize: '10pt', lineHeight: 1.5 }}>{children}</span>
-    </div>
-  );
-}
-
-export default function ReportObservations({ lights, solars, forklifts, hotWaters, extraNotes = {} }) {
-  const totalLightingKW = lights.reduce((s, l) => s + (l.rated_wattage || 0) * (l.quantity || 1) / 1000, 0);
-  const hasLEDOpportunity = lights.some(l => l.light_type && !l.light_type.toLowerCase().includes('led'));
-  const hasSolar = solars.some(s => s.system_size_kw);
-  const solarExpansion = solars.some(s => s.available_roof_space === 'Yes');
-  const schedulingOpportunity = forklifts.some(f => f.scheduling_opportunity === 'Yes');
-  const hasUninsulated = hotWaters.some(h => h.pipe_insulation === 'No');
-  const hasNoTempValve = hotWaters.some(h => h.tempering_valve === 'No');
+  // If no observations, don't render section 7 at all
+  if (observations.length === 0) {
+    return null;
+  }
 
   return (
     <section>
-      <SectionTitle number="7" title="Consolidated Observations for Energy Improvements" />
+      <div className="keep-with-next" style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #162A4E', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+        <span style={{ fontSize: '20pt', fontWeight: 800, color: '#162A4E' }}>7.</span>
+        <h2 style={{ fontSize: '18pt', fontWeight: 700, color: '#2C3E50', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>
+          Observations for Energy Improvements
+        </h2>
+      </div>
+
       <p className="text-xs text-gray-500 mb-5">
-        This section aggregates the auditor's field notes into actionable insights for the client.
+        Equipment-specific observations provided by the auditor.
       </p>
 
       <div className="space-y-4">
-        <ObservationBlock number="7.1" title="Lighting Upgrades">
-          {lights.length === 0 ? (
-            <p>No lighting data recorded. A lighting assessment should be conducted on site.</p>
-          ) : (
-            <>
-              <Bullet label="Total lighting load" value={`${totalLightingKW.toFixed(2)} kW across ${lights.length} fixture group(s)`} />
-              {hasLEDOpportunity && (
-                <BulletPoint>Opportunity identified to upgrade non-LED fixtures to high-efficiency LED, which can reduce lighting energy consumption by 50–70%.</BulletPoint>
-              )}
-              {lights.filter(l => !l.controls_type || l.controls_type.toLowerCase().includes('manual')).length > 0 && (
-                <BulletPoint>Manual control circuits identified — consider automated occupancy or daylight sensors to reduce unnecessary runtime.</BulletPoint>
-              )}
-            </>
-          )}
-          {extraNotes.obs_lighting && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_lighting}</p>}
-        </ObservationBlock>
-
-        <ObservationBlock number="7.2" title="Solar PV Optimization">
-          {solars.length === 0 ? (
-            <p>No Solar PV data recorded. A roof and switchboard suitability assessment is recommended.</p>
-          ) : (
-            <>
-              <Bullet label="Existing installed capacity" value={hasSolar ? `${solars.filter(s => s.system_size_kw).map(s => s.system_size_kw).join(', ')} kW` : 'No existing system'} />
-              {solarExpansion && (
-                <BulletPoint>Available roof space identified — expansion of solar PV capacity is feasible and recommended to offset site energy consumption.</BulletPoint>
-              )}
-              {solars.some(s => s.suitable_switchboard === 'Yes') && (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px' }}>
-                  <span style={{ flexShrink: 0 }}>✅</span>
-                  <span>A suitable switchboard connection point is available for solar PV integration or expansion.</span>
-                </div>
-              )}
-            </>
-          )}
-          {extraNotes.obs_solar && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_solar}</p>}
-        </ObservationBlock>
-
-        <ObservationBlock number="7.3" title="Load Shifting — Forklift Charging">
-          {forklifts.length === 0 ? (
-            <p>No forklift charger data recorded.</p>
-          ) : (
-            <>
-              <Bullet label="Chargers on site" value={`${forklifts.length} charger group(s) logged`} />
-              <p>
-                Opportunity to schedule forklift charging to maximize charging during solar PV production hours:{' '}
-                <strong>{schedulingOpportunity ? 'YES — Scheduling opportunity confirmed.' : 'Not yet assessed or not applicable.'}</strong>
-              </p>
-              {schedulingOpportunity && (
-                <BulletPoint>Implementing a timed charging schedule aligned with solar generation peak hours (typically 9am–3pm) could significantly reduce grid dependency and demand charges.</BulletPoint>
-              )}
-            </>
-          )}
-          {extraNotes.obs_forklift && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_forklift}</p>}
-        </ObservationBlock>
-
-        <ObservationBlock number="7.4" title="Hot Water Efficiency">
-          {hotWaters.length === 0 ? (
-            <p>No hot water system data recorded. An assessment of DHW systems is recommended.</p>
-          ) : (
-            <>
-              <Bullet label="Systems assessed" value={`${hotWaters.length} DHW unit(s)`} />
-              {hasUninsulated && (
-                <BulletPoint>Uninsulated pipework identified — adding thermal pipe insulation will reduce standby heat losses and lower energy consumption.</BulletPoint>
-              )}
-              {hasNoTempValve && (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px' }}>
-                  <span style={{ flexShrink: 0 }}>⚠️</span>
-                  <span>Tempering valve absent on one or more units — installation is recommended for both safety compliance and water efficiency.</span>
-                </div>
-              )}
-              {!hasUninsulated && !hasNoTempValve && hotWaters.length > 0 && (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '4px' }}>
-                  <span style={{ flexShrink: 0 }}>✅</span>
-                  <span>Hot water systems appear adequately maintained. Consider exploring heat pump water heater upgrades for significant efficiency gains.</span>
-                </div>
-              )}
-            </>
-          )}
-          {extraNotes.obs_hotwater && <p style={{ marginTop: '8px', color: '#333' }}>{extraNotes.obs_hotwater}</p>}
-        </ObservationBlock>
+        {observations.map((obs, idx) => (
+          <div
+            key={obs.key}
+            className="obs-block"
+            style={{
+              borderRadius: '8px',
+              borderLeft: '4px solid #162A4E',
+              padding: '12px 16px',
+              background: '#fff',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+              pageBreakInside: 'avoid',
+              breakInside: 'avoid',
+            }}
+          >
+            <h4 style={{ fontSize: '11pt', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#162A4E', marginBottom: '8px' }}>
+              7.{idx + 1}. {obs.section}
+            </h4>
+            <div style={{ fontSize: '10pt', lineHeight: 1.5, color: '#333333', wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto', whiteSpace: 'normal' }}>
+              {extraNotes[obs.key]}
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="mt-8 rounded-xl p-6 text-center" style={{ background: '#162A4E' }}>

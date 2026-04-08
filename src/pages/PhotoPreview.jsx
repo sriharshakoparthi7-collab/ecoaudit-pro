@@ -411,13 +411,7 @@ export default function PhotoPreview() {
                 {displayData.solars?.length > 0 && <ReportSolar solars={displayData.solars} zoneMap={displayData.zoneMap} />}
                 {displayData.forklifts?.length > 0 && <ReportForklift forklifts={displayData.forklifts} zoneMap={displayData.zoneMap} />}
                 {displayData.hotWaters?.length > 0 && <ReportHotWater hotWaters={displayData.hotWaters} zoneMap={displayData.zoneMap} />}
-                <ReportObservations
-                  lights={displayData.lights || []}
-                  solars={displayData.solars || []}
-                  forklifts={displayData.forklifts || []}
-                  hotWaters={displayData.hotWaters || []}
-                  extraNotes={editedContent}
-                />
+                <ReportObservations extraNotes={editedContent} />
               </div>
 
               <div className="px-10 py-5 text-center text-xs" style={{ background: '#162A4E', color: '#b8d49a' }}>

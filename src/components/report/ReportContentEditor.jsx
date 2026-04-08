@@ -3,10 +3,10 @@ import { useState } from 'react';
 
 const SECTIONS = [
   { key: 'execSummary', label: 'Executive Summary', placeholder: 'Enter a custom executive summary paragraph...' },
-  { key: 'obs_lighting', label: '7.1 Lighting Upgrades — Notes', placeholder: 'Additional observations for lighting...' },
-  { key: 'obs_solar', label: '7.2 Solar PV — Notes', placeholder: 'Additional observations for solar PV...' },
-  { key: 'obs_forklift', label: '7.3 Forklift Charging — Notes', placeholder: 'Additional observations for forklift charging...' },
-  { key: 'obs_hotwater', label: '7.4 Hot Water — Notes', placeholder: 'Additional observations for hot water...' },
+  { key: 'obs_lighting', label: '7.1 Lighting Upgrades', placeholder: 'Enter observations for lighting equipment (optional — only appears if content is added)' },
+  { key: 'obs_solar', label: '7.2 Solar PV', placeholder: 'Enter observations for solar PV equipment (optional — only appears if content is added)' },
+  { key: 'obs_forklift', label: '7.3 Forklift Charging', placeholder: 'Enter observations for forklift charger equipment (optional — only appears if content is added)' },
+  { key: 'obs_hotwater', label: '7.4 Hot Water Systems', placeholder: 'Enter observations for hot water equipment (optional — only appears if content is added)' },
 ];
 
 export default function ReportContentEditor({ content, onChange }) {
