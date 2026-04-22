@@ -13,6 +13,8 @@ import ReportSolar from '../components/report/ReportSolar';
 import ReportForklift from '../components/report/ReportForklift';
 import ReportHotWater from '../components/report/ReportHotWater';
 import ReportObservations from '../components/report/ReportObservations';
+import ReportGeneralWater from '../components/report/ReportGeneralWater';
+import ReportGeneralElectricity from '../components/report/ReportGeneralElectricity';
 import ReportContentEditor from '../components/report/ReportContentEditor';
 import moment from 'moment';
 
@@ -24,6 +26,8 @@ const EQUIPMENT_LABELS = {
   solar: 'Solar PV',
   forklift: 'Forklift Charger',
   hotwater: 'Hot Water System',
+  general_water: 'General Water',
+  general_electricity: 'General Electricity',
 };
 
 const ENTITY_MAP = {
@@ -34,6 +38,8 @@ const ENTITY_MAP = {
   solar: 'SolarPV',
   forklift: 'ForkliftCharger',
   hotwater: 'HotWaterSystem',
+  general_water: 'GeneralWater',
+  general_electricity: 'GeneralElectricity',
 };
 
 function extractPhotos(item) {
@@ -62,6 +68,8 @@ function getItemName(type, item) {
     case 'solar': return 'Solar PV';
     case 'forklift': return item.charger_type || 'Forklift Charger';
     case 'hotwater': return item.dhw_details_type || 'Hot Water';
+    case 'general_water': return item.question || 'General Water';
+    case 'general_electricity': return item.question || 'General Electricity';
     default: return 'Item';
   }
 }
@@ -126,6 +134,8 @@ export default function PhotoPreview() {
       solars: eqMap.solar || [],
       forklifts: eqMap.forklift || [],
       hotWaters: eqMap.hotwater || [],
+      generalWaters: eqMap.general_water || [],
+      generalElectricities: eqMap.general_electricity || [],
     });
     setGroups(newGroups);
     setLoading(false);
@@ -227,6 +237,8 @@ export default function PhotoPreview() {
     solars: rawData.solars.map(i => removeExcludedPhotos(i, excluded)),
     forklifts: rawData.forklifts.map(i => removeExcludedPhotos(i, excluded)),
     hotWaters: rawData.hotWaters.map(i => removeExcludedPhotos(i, excluded)),
+    generalWaters: (rawData.generalWaters || []).map(i => removeExcludedPhotos(i, excluded)),
+    generalElectricities: (rawData.generalElectricities || []).map(i => removeExcludedPhotos(i, excluded)),
   } : null;
 
   if (loading) {
@@ -411,6 +423,8 @@ export default function PhotoPreview() {
                 {displayData.solars?.length > 0 && <ReportSolar solars={displayData.solars} zoneMap={displayData.zoneMap} />}
                 {displayData.forklifts?.length > 0 && <ReportForklift forklifts={displayData.forklifts} zoneMap={displayData.zoneMap} />}
                 {displayData.hotWaters?.length > 0 && <ReportHotWater hotWaters={displayData.hotWaters} zoneMap={displayData.zoneMap} />}
+                <ReportGeneralWater generalWaters={displayData.generalWaters} zoneMap={displayData.zoneMap} />
+                <ReportGeneralElectricity generalElectricities={displayData.generalElectricities} zoneMap={displayData.zoneMap} />
                 <ReportObservations extraNotes={editedContent} />
               </div>
 

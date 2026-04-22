@@ -14,6 +14,8 @@ import ReportSolar from '../components/report/ReportSolar';
 import ReportForklift from '../components/report/ReportForklift';
 import ReportHotWater from '../components/report/ReportHotWater';
 import ReportObservations from '../components/report/ReportObservations';
+import ReportGeneralWater from '../components/report/ReportGeneralWater';
+import ReportGeneralElectricity from '../components/report/ReportGeneralElectricity';
 
 function removeExcludedPhotos(obj, excludedSet) {
   if (!obj || excludedSet.size === 0) return obj;
@@ -186,11 +188,13 @@ export default function ClientReport() {
     solars: (data.solars || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
     forklifts: (data.forklifts || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
     hotWaters: (data.hotWaters || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    generalWaters: (data.generalWaters || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
+    generalElectricities: (data.generalElectricities || []).map(i => removeExcludedPhotos(i, excludedPhotos)),
   } : data;
   const displayData = exportFilter || baseData;
 
   const loadAll = async () => {
-    const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters] = await Promise.all([
+    const [audits, zones, mains, additionals, hvacs, lights, solars, forklifts, hotWaters, generalWaters, generalElectricities] = await Promise.all([
       base44.entities.Audit.filter({ id: auditId }),
       base44.entities.Zone.filter({ audit_id: auditId }),
       base44.entities.MainSwitchboard.filter({ audit_id: auditId }),
@@ -200,10 +204,12 @@ export default function ClientReport() {
       base44.entities.SolarPV.filter({ audit_id: auditId }),
       base44.entities.ForkliftCharger.filter({ audit_id: auditId }),
       base44.entities.HotWaterSystem.filter({ audit_id: auditId }),
+      base44.entities.GeneralWater.filter({ audit_id: auditId }),
+      base44.entities.GeneralElectricity.filter({ audit_id: auditId }),
     ]);
     const zoneMap = {};
     zones.forEach(z => { zoneMap[z.id] = z.zone_name; });
-    setData({ audit: audits[0] || {}, zoneMap, mains, additionals, hvacs, lights, solars, forklifts, hotWaters });
+    setData({ audit: audits[0] || {}, zoneMap, mains, additionals, hvacs, lights, solars, forklifts, hotWaters, generalWaters, generalElectricities });
     setLoading(false);
   };
 
@@ -304,6 +310,8 @@ export default function ClientReport() {
               {displayData.solars?.length > 0 && <ReportSolar solars={displayData.solars} zoneMap={displayData.zoneMap} />}
               {displayData.forklifts?.length > 0 && <ReportForklift forklifts={displayData.forklifts} zoneMap={displayData.zoneMap} />}
               {displayData.hotWaters?.length > 0 && <ReportHotWater hotWaters={displayData.hotWaters} zoneMap={displayData.zoneMap} />}
+              <ReportGeneralWater generalWaters={displayData.generalWaters} zoneMap={displayData.zoneMap} />
+              <ReportGeneralElectricity generalElectricities={displayData.generalElectricities} zoneMap={displayData.zoneMap} />
               <ReportObservations extraNotes={editedContent} />
         </div>
 

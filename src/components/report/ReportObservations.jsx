@@ -22,7 +22,7 @@ export default function ReportObservations({ extraNotes = {} }) {
   return (
     <section>
       <div className="keep-with-next" style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px', paddingBottom: '8px', borderBottom: '2px solid #162A4E', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
-        <span style={{ fontSize: '20pt', fontWeight: 800, color: '#162A4E' }}>7.</span>
+        <span style={{ fontSize: '20pt', fontWeight: 800, color: '#162A4E' }}>9.</span>
         <h2 style={{ fontSize: '18pt', fontWeight: 700, color: '#2C3E50', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>
           Observations for Energy Improvements
         </h2>
