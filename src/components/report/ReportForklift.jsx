@@ -46,6 +46,18 @@ export default function ReportForklift({ forklifts, zoneMap }) {
                 </div>
               </div>
 
+              {fc.extra_notes && (
+                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#f0f7ee', borderLeft: '3px solid #79B44A', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '9pt', fontWeight: 700, color: '#162A4E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Additional Notes</p>
+                  <p style={{ fontSize: '9pt', color: '#333', lineHeight: 1.5 }}>{fc.extra_notes}</p>
+                </div>
+              )}
+              {fc.energy_improvement_observations && (
+                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#fff8e6', borderLeft: '3px solid #f5a623', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '9pt', fontWeight: 700, color: '#162A4E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Observations for Energy Improvement</p>
+                  <p style={{ fontSize: '9pt', color: '#333', lineHeight: 1.5 }}>{fc.energy_improvement_observations}</p>
+                </div>
+              )}
               {(fc.charger_photo || fc.charger_label_photo || fc.electric_connection_photo || fc.charger_space_photo || fc.socket_connection_photo || fc.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>

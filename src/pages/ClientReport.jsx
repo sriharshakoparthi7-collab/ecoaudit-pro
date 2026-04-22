@@ -105,13 +105,31 @@ export default function ClientReport() {
     // Wait for reflow after spacer insertion
     await new Promise(r => setTimeout(r, 300));
 
+    // Temporarily force white backgrounds to prevent dark-theme bleed
+    const prevBg = el.style.background;
+    el.style.background = '#f7f8f8';
+    el.style.colorScheme = 'light';
+
     const canvas = await html2canvas(el, {
-      scale: 3,
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#f7f8f8',
       logging: false,
+      onclone: (doc) => {
+        // Force light mode on cloned document to prevent dark-theme black backgrounds
+        doc.documentElement.setAttribute('data-theme', 'light');
+        doc.documentElement.classList.remove('dark');
+        doc.documentElement.style.colorScheme = 'light';
+        const clonedEl = doc.querySelector('[data-pdf-root]');
+        if (clonedEl) {
+          clonedEl.style.background = '#f7f8f8';
+        }
+      },
     });
+
+    el.style.background = prevBg;
+    el.style.colorScheme = '';
 
     // Remove spacers
     spacers.forEach(s => s.remove());
@@ -276,7 +294,7 @@ export default function ClientReport() {
       </div>
 
       {/* Report Document */}
-      <div ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', outline: '2px solid #2C3E50', outlineOffset: '-12px' }} style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+      <div data-pdf-root ref={reportRef} className="report-body rounded-2xl overflow-hidden shadow-xl report-page report-page-border" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', background: '#f7f8f8', colorScheme: 'light' }}>
         <ReportHeader audit={audit} />
 
         <div className="report-content space-y-12" style={{ background: '#f7f8f8' }}>

@@ -33,6 +33,18 @@ export default function ReportSolar({ solars, zoneMap }) {
                 </div>
               </div>
 
+              {pv.extra_notes && (
+                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#f0f7ee', borderLeft: '3px solid #79B44A', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '9pt', fontWeight: 700, color: '#162A4E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Additional Notes</p>
+                  <p style={{ fontSize: '9pt', color: '#333', lineHeight: 1.5 }}>{pv.extra_notes}</p>
+                </div>
+              )}
+              {pv.energy_improvement_observations && (
+                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#fff8e6', borderLeft: '3px solid #f5a623', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '9pt', fontWeight: 700, color: '#162A4E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Observations for Energy Improvement</p>
+                  <p style={{ fontSize: '9pt', color: '#333', lineHeight: 1.5 }}>{pv.energy_improvement_observations}</p>
+                </div>
+              )}
               {(pv.roof_photo || pv.inverter_label_photo || pv.electricity_meter_photo || pv.additional_solar_space_photo || pv.switchboard_photo || pv.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '16px' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>

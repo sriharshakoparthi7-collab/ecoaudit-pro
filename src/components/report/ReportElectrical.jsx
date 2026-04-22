@@ -24,6 +24,12 @@ export default function ReportElectrical({ mains, additionals, zoneMap }) {
               <FieldRow label="Sub-Circuits & Ratings" value={msb.sub_circuits_description} />
               <FieldRow label="Zone" value={zoneMap[msb.zone_id]} />
               <FieldRow label="Auditor Comments" value={msb.comments} />
+              {msb.extra_notes && (
+                <div style={{ marginTop: '12px', padding: '10px 14px', background: '#f0f7ee', borderLeft: '3px solid #79B44A', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '9pt', fontWeight: 700, color: '#162A4E', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Additional Notes</p>
+                  <p style={{ fontSize: '9pt', color: '#333', lineHeight: 1.5 }}>{msb.extra_notes}</p>
+                </div>
+              )}
               {(msb.photo || msb.extra_photos?.length > 0) && (
                 <div className="photo-evidence" style={{ marginTop: '12px', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <p className="keep-with-next" style={{ fontSize: '10pt', fontWeight: 600, color: '#162A4E', marginBottom: '8px', pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Photographic Evidence</p>
